@@ -16,3 +16,7 @@ apps/api/media/
 
 # logs
 *.log
+
+# Next.js build output
+.next/
+apps/webstore/.next/
