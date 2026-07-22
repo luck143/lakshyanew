@@ -162,6 +162,10 @@ form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 /* Quick create */
 .quick-create{margin:0 0 12px;padding:14px;background:#ffffff;border:1px solid var(--neu-line);border-radius:var(--radius);border-left:4px solid var(--teal);box-shadow:0 12px 30px rgba(13,148,136,.1)}
 .quick-create .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+[data-theme="dark"] .quick-create{background:#0b1220;border-color:#1e293b}
+[data-theme="dark"] .quick-create input,[data-theme="dark"] .quick-create textarea,[data-theme="dark"] .quick-create select{background:#0f172a;color:#f1f5f9;border-color:#334155}
+[data-theme="dark"] .card,[data-theme="dark"] .filters,[data-theme="dark"] .bulkbar,[data-theme="dark"] .col-toggle .chip,[data-theme="dark"] .stat,[data-theme="dark"] table{background:#0b1220;border-color:#1e293b}
+[data-theme="dark"] .nav a:hover{background:#0f172a}
 
 /* Column toggle */
 .col-toggle{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
@@ -194,6 +198,14 @@ form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .sm:hover{background:#f8fafc;box-shadow:0 8px 20px rgba(15,23,41,.1);transform:translateY(-1px)}
 .sm.danger{color:#991b1b;background:#fff1f2}
 .sm.danger:hover{background:#fee2e2}
+
+/* Polish: constrain long text columns, align headers, stronger bulk delete */
+td[data-col="title"]{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+th a{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+th{text-align:left}
+.bulkbar .btn.danger{background:linear-gradient(180deg,#f87171,#ef4444);color:#fff;border:0}
+.bulkbar{position:sticky;top:64px;z-index:4}
+.quick-create .row{align-items:end}
 
 /* Menu */
 .menu{display:none;position:absolute;right:0;top:28px;background:#ffffff;border:1px solid var(--neu-line);border-radius:var(--radius-sm);box-shadow:0 12px 34px rgba(15,23,41,.12);min-width:160px;z-index:20;padding:4px}
@@ -738,7 +750,7 @@ export async function buildApp(surface: AdminSurface = { role: 'network', title:
 
     const quickFormHref = `/${resource}/new`;
 
-    const csvAction = `/api/${resource}?${new URLSearchParams(apiArgs as any).toString()}`;
+    const csvAction = `/${resource}/export.csv?${new URLSearchParams(apiArgs as any).toString()}`;
 
     const content = `
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px">
@@ -794,6 +806,36 @@ export async function buildApp(surface: AdminSurface = { role: 'network', title:
       </div>
     `;
     return reply.type('text/html').send(renderShell(renderSidebar(nav, surface.basePath, currentPath), content));
+  });
+
+  function csvEscape(v: any): string {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+  function toCsv(rows: any[], cols: string[]): string {
+    const head = cols.map(csvEscape).join(',');
+    const body = rows.map((r) => cols.map((c) => csvEscape(r[c])).join(',')).join('\n');
+    return `${head}\n${body}`;
+  }
+
+  app.get('/:resource/export.csv', async (req, reply) => {
+    const { resource } = req.params as any;
+    const q = req.query as any;
+    const metaRes = await api('GET', `/api/meta/${resource}`);
+    const meta = metaRes.data;
+    if (!meta || !meta.listView) return reply.type('text/plain').code(404).send('Unknown resource');
+    const cols = Object.keys(meta.listView.columns);
+    const apiArgs: Record<string, unknown> = { limit: 1000, page: 1, sortby: q.sortby, sortorder: q.sortorder ?? 'asc' };
+    if (q.filters) apiArgs.filters = q.filters;
+    if (q.q) apiArgs.q = q.q;
+    const rowsData = await api('GET', `/api/${resource}?${new URLSearchParams(apiArgs as any).toString()}`);
+    const rows: any[] = (rowsData.data?.data ?? []).filter((r: any) => r && typeof r === 'object');
+    const csv = toCsv(rows, cols);
+    const safeName = (meta.labelPlural ?? meta.label ?? resource).replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+    return reply
+      .header('content-type', 'text/csv; charset=utf-8')
+      .header('content-disposition', `attachment; filename="${safeName}.csv"`)
+      .send(csv);
   });
 
   app.get('/:resource/new', async (req, reply) => {

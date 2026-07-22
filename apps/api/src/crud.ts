@@ -17,6 +17,7 @@ export interface ListParams {
   sortorder?: 'asc' | 'desc';
   filters?: Record<string, unknown>;
   filterRules?: Array<{ field: string; op: string; value: unknown }>;
+  q?: string;
 }
 
 function clientModel(resource: Resource): any {
@@ -178,6 +179,17 @@ export async function listResource(
     }
   }
 
+  // Free-text search across searchable string/text/richtext/url fields (OR).
+  const q = typeof params.q === 'string' ? params.q.trim() : '';
+  if (q) {
+    const searchFields = Object.entries(resource.fields)
+      .filter(([, f]) => (f as any).ui?.searchable && ['string', 'text', 'richtext', 'url'].includes((f as any).type))
+      .map(([k]) => k);
+    if (searchFields.length) {
+      where.OR = searchFields.map((f) => ({ [f]: { contains: q, mode: 'insensitive' } }));
+    }
+  }
+
   const orderBy: any = {};
   const sortby = params.sortby ?? resource.listView?.defaultSort;
   if (sortby && (resource.fields[sortby] || ['createdAt', 'updatedAt'].includes(sortby))) {
@@ -254,6 +266,17 @@ export async function publicList(
       } else {
         where[field] = { [ops[op]]: value };
       }
+    }
+  }
+
+  // Free-text search across searchable string/text/richtext/url fields (OR).
+  const q = typeof params.q === 'string' ? params.q.trim() : '';
+  if (q) {
+    const searchFields = Object.entries(resource.fields)
+      .filter(([, f]) => (f as any).ui?.searchable && ['string', 'text', 'richtext', 'url'].includes((f as any).type))
+      .map(([k]) => k);
+    if (searchFields.length) {
+      where.OR = searchFields.map((f) => ({ [f]: { contains: q, mode: 'insensitive' } }));
     }
   }
 

@@ -1,23 +1,27 @@
 // apps/webstore/app/layout.tsx
 import './globals.css';
+import Link from 'next/link';
+import AuthHeader from '@/components/AuthHeader';
+
 export const metadata = {
   title: 'Lakshya — Learn Engineering, Books & Courses',
   description: 'Books, courses and articles on modern software engineering — a metadata-driven learning platform.',
 };
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <header className="site-header">
           <div className="bar">
-            <a className="brand" href="/"><span className="dot" />Lakshya</a>
+            <Link className="brand" href="/"><span className="dot" />Lakshya</Link>
             <nav className="nav">
-              <a href="/products">Shop</a>
-              <a href="/blog">Blog</a>
-              <a href="/products?cat=books">Books</a>
-              <a href="/products?cat=courses">Courses</a>
+              <Link href="/products">Shop</Link>
+              <Link href="/blog">Blog</Link>
+              <Link href="/products?cat=books">Books</Link>
+              <Link href="/products?cat=courses">Courses</Link>
             </nav>
-            <a className="cart" href="/cart">Cart</a>
+            <AuthHeader />
           </div>
         </header>
         <main>{children}</main>

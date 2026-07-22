@@ -1,8 +1,10 @@
 // apps/api/src/server.ts
 // Fastify API server. Generic CRUD routes driven by @lakshya/core registry.
 // Response envelope preserves legacy {status,data,message} (ADR-003).
-
 import Fastify from 'fastify';
+import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
+import bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -10,7 +12,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { registry, adminMeta, accessibleResources, buildNav, type ScopeRole } from '@lakshya/core';
 import { config } from './config.js';
-import { verifyToken, checkAccess, requireSom, type AuthUser } from './auth.js';
+import { verifyToken, checkAccess, requireSom, signToken, type AuthUser } from './auth.js';
 import {
   createResource,
   updateResource,
@@ -33,6 +35,21 @@ import { authorizePayment } from './payments.js';
 import './resources.js'; // registers resources
 
 const app = Fastify({ logger: false });
+
+// CORS for webstore cross-origin auth cookies
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+await app.register(cors, {
+  origin: corsOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant', 'X-Request-Id'],
+});
+
+// Register cookie parser for auth routes
+await app.register(cookie, {
+  secret: config.jwtSecret,
+  hook: 'onRequest',
+});
 
 // Media storage root (Phase 7). Files written here, served at /media/*
 const MEDIA_DIR = path.resolve(process.cwd(), 'media');
@@ -122,6 +139,7 @@ app.get('/api/:resource', async (req, reply) => {
     limit: q.limit,
     sortby: q.sortby,
     sortorder: q.sortorder,
+    q: typeof q.q === 'string' ? q.q.trim() : undefined,
     filters: q.filters ? JSON.parse(q.filters) : undefined,
     ...(Array.isArray(q.filterRules) ||
     (typeof q.filterRules === 'string' && q.filterRules.trim().length > 0)
@@ -145,6 +163,119 @@ app.get('/api/meta/nav', async (req, reply) => {
   const role: ScopeRole = (user?.role as ScopeRole) ?? 'network';
   const sections = buildNav({ role, perms: user?.permissions ?? [], basePath: `/panel/${role}` });
   return reply.send({ status: 1, data: sections, message: 'ok' });
+});
+
+// ---- Auth routes (Phase 22): login, register, logout, me ----
+
+// POST /auth/register — create a new user (role=user)
+app.post('/auth/register', async (req, reply) => {
+  const { email, password, name } = req.body as any;
+  if (!email || !password) throw new ApiError(422, 'email and password required');
+
+  const existing = await prisma.user.findFirst({ where: { email } });
+  if (existing) throw new ApiError(409, 'email already registered');
+
+  const hashed = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      passwordHash: hashed,
+      name: name || undefined,
+      role: 'user',
+      status: 'active',
+      tenantId: process.env.DEFAULT_TENANT || 'default',
+      roles: [], // SOM triples
+    },
+  });
+
+  // JWT token with user context
+  const token = signToken({
+    uid: user.id,
+    email: user.email ?? undefined,
+    name: user.name ?? undefined,
+    role: user.role,
+    permissions: [],
+    status: user.status,
+    tenantId: user.tenantId,
+  });
+
+  // Set httpOnly cookie
+  reply.setCookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+    path: '/',
+  });
+
+  return reply.send({ status: 1, data: { uid: user.id, email: user.email, name: user.name }, message: 'Registered' });
+});
+
+// POST /auth/login — authenticate user, set cookie
+app.post('/auth/login', async (req, reply) => {
+  const { email, password } = req.body as any;
+  if (!email || !password) throw new ApiError(422, 'email and password required');
+
+  const user = await prisma.user.findFirst({ where: { email } });
+  if (!user) throw new ApiError(401, 'invalid credentials');
+
+  if (!user.passwordHash) throw new ApiError(401, 'invalid credentials');
+
+  const match = await bcrypt.compare(password, user.passwordHash);
+  if (!match) throw new ApiError(401, 'invalid credentials');
+
+  if (user.status !== 'active') throw new ApiError(403, 'account inactive');
+
+  const token = signToken({
+    uid: user.id,
+    email: user.email ?? undefined,
+    name: user.name ?? undefined,
+    role: user.role,
+    permissions: [],
+    status: user.status,
+    tenantId: user.tenantId,
+  });
+
+  reply.setCookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60,
+    path: '/',
+  });
+
+  return reply.send({ status: 1, data: { uid: user.id, email: user.email, name: user.name }, message: 'Logged in' });
+});
+
+// POST /auth/logout — clear cookie
+app.post('/auth/logout', async (_req, reply) => {
+  reply.clearCookie('token', { path: '/' });
+  return reply.send({ status: 1, data: null, message: 'Logged out' });
+});
+
+// GET /auth/me — get current user from cookie
+app.get('/auth/me', async (req, reply) => {
+  const token = (req as any).cookies?.token as string | undefined;
+  if (!token) return reply.send({ status: 1, data: null, message: 'Not logged in' });
+
+  const user = verifyToken(token);
+  if (!user) return reply.send({ status: 1, data: null, message: 'Invalid token' });
+
+  // Refresh user data from db (status, permissions, etc.)
+  const dbUser = await prisma.user.findUnique({ where: { id: user.uid } });
+  if (!dbUser) return reply.send({ status: 1, data: null, message: 'User not found' });
+
+  return reply.send({
+    status: 1,
+    data: {
+      uid: dbUser.id,
+      email: dbUser.email,
+      name: dbUser.name ?? undefined,
+      role: dbUser.role,
+      permissions: [],
+    },
+    message: 'ok',
+  });
 });
 
 // ---- Public (unauthenticated) read for the SEO storefront (ADR-004) ----
@@ -372,6 +503,7 @@ app.get('/:resource.csv', async (req, reply) => {
     limit: q.limit,
     sortby: q.sortby,
     sortorder: q.sortorder,
+    q: typeof q.q === 'string' ? q.q.trim() : undefined,
     filters: q.filters ? JSON.parse(q.filters) : undefined,
     ...(Array.isArray(q.filterRules) || (typeof q.filterRules === 'string' && q.filterRules.trim().length > 0)
       ? { filterRules: typeof q.filterRules === 'string' ? JSON.parse(q.filterRules) : q.filterRules }
