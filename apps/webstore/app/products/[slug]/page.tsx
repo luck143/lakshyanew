@@ -3,6 +3,7 @@
 import { getProduct, listProducts } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import AddToCart from './AddToCart';
+import { Placeholder } from '@/components/Placeholder';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,11 +23,18 @@ export default async function ProductPage({ params }: { params: { slug: string }
   } catch {
     notFound();
   }
-  const norm = (v?: string) => v ? v.replace(/<\/?[\w\s="-]+>/gi, ' ').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\s+/g,' ').trim() : '';
+  if (!product) notFound();
   return (
     <div className="container">
       <div className="pdp">
-        <div className="gallery">📘</div>
+        <div className="gallery">
+          {product.cover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.cover} alt={product.title} style={{ width: '100%', borderRadius: 16, objectFit: 'cover' }} />
+          ) : (
+            <Placeholder kind="product" seed={product.id} tags={product.tags} label={product.title} size="lg" />
+          )}
+        </div>
         <div>
           <h1>{product.title}</h1>
           <div className="price">₹{product.price}</div>
@@ -36,7 +44,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
             {product.tags?.length ? <span>{product.tags.map((t: string) => <span key={t} className="tag">{t}</span>)}</span> : null}
           </div>
           {product.description ? (
-            <div className="desc">{norm(product.description)}</div>
+            <div className="desc" dangerouslySetInnerHTML={{ __html: product.description }} />
           ) : null}
           <AddToCart productId={product.id} />
         </div>

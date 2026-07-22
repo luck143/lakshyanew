@@ -2,6 +2,7 @@
 // Product listing: Server-rendered on demand (fresh from public API).
 import Link from 'next/link';
 import { listProducts, listCategories } from '@/lib/api';
+import { Placeholder } from '@/components/Placeholder';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
   } catch {}
   const active = categories.data.find((c: any) => c.slug === cat);
   const items = cat ? products.data.filter((p) => p.tags?.includes(cat)) : products.data;
-  const norm = (v?: string) => v ? v.replace(/<\/?[\w\s="-]+>/gi, ' ').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\s+/g,' ').trim() : '—';
+  const strip = (v?: string) => v ? v.replace(/<[^>]+>/g, ' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim() : '—';
   return (
     <section className="container" style={{ padding: '48px 22px' }}>
       <div className="section-head">
@@ -35,9 +36,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
         <div className="grid cards">
           {items.map((p) => (
             <Link key={p.id} className="card" href={`/products/${p.slug}`} style={{ color: 'inherit' }}>
-              <div className="thumb">📘</div>
+              <Placeholder kind="product" seed={p.id} tags={p.tags} label={p.title} size="md" />
               <h3>{p.title}</h3>
-              <p className="desc">{norm(p.description ? p.description.slice(0, 96) : '—')}</p>
+              <p className="desc">{strip(p.description ?? '—').slice(0, 96)}</p>
               <div className="row">
                 <span className="price">₹{p.price}</span>
                 <span className="cat-pill">{p.tags?.[0] ?? 'item'}</span>

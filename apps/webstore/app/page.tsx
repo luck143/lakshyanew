@@ -2,6 +2,7 @@
 // Home: Server-Side Rendered (dynamic) — always fresh from the public API.
 import Link from 'next/link';
 import { listPosts, listProducts, listCategories } from '@/lib/api';
+import { Placeholder } from '@/components/Placeholder';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +53,7 @@ export default async function HomePage() {
           <div className="grid cards">
             {featured.map((p) => (
               <Link key={p.id} className="card" href={`/products/${p.slug}`} style={{ color: 'inherit' }}>
-                <div className="thumb">📘</div>
+                <Placeholder kind="product" seed={p.id} tags={p.tags} label={p.title} size="md" />
                 <h3>{p.title}</h3>
                 <div className="desc">
                   {p.description ? (
@@ -77,7 +78,7 @@ export default async function HomePage() {
           <div className="grid cards">
             {categories.data.map((c: any) => (
               <Link key={c.id} className="card" href={`/products?cat=${c.slug}`} style={{ color: 'inherit', alignItems: 'center', textAlign: 'center' }}>
-                <div className="thumb" style={{ width: '100%' }}>🗂️</div>
+                <Placeholder kind="category" seed={c.id} label={c.name} size="md" />
                 <h3>{c.name}</h3>
               </Link>
             ))}
@@ -96,6 +97,7 @@ export default async function HomePage() {
           <div className="grid cards">
             {latest.map((p) => (
               <Link key={p.id} className="post" href={`/blog/${p.slug}`} style={{ color: 'inherit' }}>
+                <Placeholder kind="blog" seed={p.id} tags={p.tags} label={p.title} size="md" />
                 <h3>{p.title}</h3>
                 <div className="meta">{p.tags?.join(' · ') || 'article'}</div>
                 <div className="excerpt">
