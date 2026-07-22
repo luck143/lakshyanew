@@ -1,0 +1,847 @@
+// Prisma schema v1 — Phase 0
+// Source of truth (mirrors the metadata resource definitions in packages/core).
+// Tenant-scoped: every tenant entity carries tenantId (ADR-002).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  domain    String   @unique
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id           String   @id @default(uuid())
+  tenantId     String
+  extra      Json?     // old ClickHouse `extra` blob
+  email        String?   // legacy users may lack email
+  passwordHash String?
+  name         String?
+  role         String   @default("user") // network | publisher | user
+  roles        Json?    @default("[]")   // SOM triples [{object,mode,scope}], mirrors users_modules_som
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  roleLinks    UserRole[]   // membership in named roles
+  orders      Order[]      // placed orders
+  reviews     Review[]     // authored reviews
+  carts       Cart[]       // shopping carts
+  subscriptions Subscription[] // active/past subscriptions
+  contacts     Contact[]    // CRM contacts owned
+  @@index([tenantId])
+}
+
+// Named role template — a set of SOM triples (mirrors users_modules_role).
+model Role {
+  id          String   @id @default(uuid())
+  tenantId    String
+  key         String   // e.g. "editor", "publisher_admin"
+  name        String
+  soms        Json?    @default("[]")   // [{object,mode,scope}]
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     UserRole[]
+  @@index([tenantId])
+}
+
+// user <-> role membership (mirrors users_modules_roles).
+model UserRole {
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String
+  roleId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([tenantId])
+}
+
+model Topic {
+  id        String   @id @default(uuid())
+  tenantId String
+  name      String
+  parentId  String?
+  status    String   @default("active")
+  content   String?
+  sortOrder Int      @default(0)
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, parentId])
+  @@index([tenantId, status])
+  quizSets   QuizSet[]
+  notes      Note[]
+  videos     VideoList[]
+}
+
+model BlogPost {
+  id        String   @id @default(uuid())
+  tenantId String
+  extra      Json?     // old ClickHouse `extra` blob
+  title     String
+  slug      String
+  body      String?
+  status    String   @default("draft")
+  tags      String[]
+  image     String?
+  authorId  String?
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+// ---- E-commerce (Phase 3) ----
+
+model Category {
+  id        String   @id @default(uuid())
+  tenantId String
+  name      String
+  slug      String
+  status    String   @default("active")
+  image     String?
+  description String?
+  resultFormat String?
+  parentId  String?
+  sortOrder Int      @default(0)
+  extra     Json?
+  products  Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, parentId])
+}
+
+model Product {
+  id         String    @id @default(uuid())
+  tenantId   String
+  title      String
+  slug       String
+  description String?
+  price      Float     @default(0)
+  compareAtPrice Float?
+  costPrice  Float?
+  brand      String?
+  vendor     String?
+  categories Json?     // old `categories` JSON array (ids/names)
+  images     Json?     // old `images` gallery URLs
+  extra      Json?     // old `extra` blob (social/phone/schedule)
+  status     String    @default("active")
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  sku        String?
+  stock      Int       @default(0)
+  gstPercent Float?
+  subscriptionType String?
+  subscriptionDays Int?
+  tags       String[]
+  ownerId    String?   // -> User (old uid)
+  examId     String?   // -> Exam (old examid)
+  orderItems OrderItem[]
+  reviews    Review[]
+  cartItems  CartItem[]
+  subscriptions Subscription[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([tenantId, categoryId])
+  @@index([tenantId, status])
+}
+
+// ---- E-commerce: Orders (Phase 5) ----
+
+model Order {
+  id        String      @id @default(uuid())
+  tenantId String
+  extra      Json?     // old ClickHouse `extra` blob
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id])
+  status    String      @default("pending") // pending | paid | shipped | cancelled
+  total     Float       @default(0)
+  currency  String      @default("INR")
+  paymentRef String? // gateway transaction/reference id once paid
+  paidAt    DateTime?
+  title     String?
+  address   Json?     // old `address` JSON blob
+  buyerNote String?
+  trackingLink String?
+  subscriptionExpire DateTime?
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([tenantId, userId])
+  @@index([tenantId, status])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  tenantId String
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  qty       Int     @default(1)
+  price     Float   @default(0) // snapshot of unit price at order time
+
+  @@index([tenantId, orderId])
+  @@index([tenantId, productId])
+}
+
+// ---- Media & File Management (Phase 7) ----
+
+model Media {
+  id           String   @id @default(uuid())
+  tenantId     String
+  name         String // human label / alt text
+  originalName String?
+  mimeType     String?
+  size         Int      @default(0)
+  path         String // relative url served at /media/* e.g. /media/uuid.png
+  width        Int?
+  height       Int?
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  variants     MediaVariant[]
+
+  @@index([tenantId, mimeType])
+}
+
+// ---- imgen: Media variants (Phase 14) ----
+
+model MediaVariant {
+  id       String  @id @default(uuid())
+  tenantId String
+  mediaId  String
+  media    Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  width    Int?
+  height   Int?
+  format   String // e.g. "webp", "thumbnail"
+  path     String // relative url served at /media/variant/<id>
+  size     Int     @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, mediaId])
+}
+
+// ---- E-commerce: Reviews (Phase 9) ----
+
+model Review {
+  id        String   @id @default(uuid())
+  tenantId  String
+  productId String?  // legacy reviews may lack a product link
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  rating    Int      @default(5) // 1..5
+  title     String?
+  body      String?
+  images    String[]
+  featured  Boolean  @default(false)
+  tags      String[]
+  extra     Json?
+  videoId   String?  // -> VideoList (old vid)
+  video     VideoList? @relation(fields: [videoId], references: [id])
+  status    String   @default("pending") // pending | approved | rejected
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, productId])
+  @@index([tenantId, status])
+}
+
+// ---- E-commerce: Cart (Phase 10) ----
+
+model Cart {
+  id        String     @id @default(uuid())
+  tenantId  String
+  extra      Json?     // old ClickHouse `extra` blob
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id])
+  status    String     @default("active") // active | converted | abandoned
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([tenantId, userId])
+  @@index([tenantId, status])
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  tenantId  String
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  qty       Int     @default(1)
+  price     Float   @default(0) // snapshot unit price
+
+  @@index([tenantId, cartId])
+  @@index([tenantId, productId])
+}
+
+// ---- E-commerce: Coupons (Phase 11) ----
+
+model Coupon {
+  id          String    @id @default(uuid())
+  tenantId    String
+  code        String
+  description String?
+  type        String    @default("percent") // percent | fixed
+  value       Float     @default(0) // percent (0..100) or fixed amount
+  minAmount   Float?    // minimum cart subtotal to qualify
+  maxUses     Int?      // total redemption cap
+  usedCount   Int       @default(0)
+  maxDiscountAmount Float? // cap on discount given
+  applyOn     String?   // products | categories | all
+  image       String?
+  banner      String?
+  status      String    @default("active") // active | inactive | expired
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId, status])
+}
+
+// ---- E-commerce: Subscriptions (Phase 12) ----
+
+model Subscription {
+  id               String   @id @default(uuid())
+  tenantId         String
+  extra      Json?     // old ClickHouse `extra` blob
+  userId           String?  // legacy subscriptions may lack a user link
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId        String?  // -> Product (old pid)
+  product          Product? @relation(fields: [productId], references: [id])
+  videoId          String?  // -> VideoList (old vid)
+  video            VideoList? @relation(fields: [videoId], references: [id])
+  examId           String?  // -> Exam (old examid)
+  exam             Exam?    @relation(fields: [examId], references: [id])
+  plan            String   // plan key/slug, e.g. "pro-monthly"
+  status           String   @default("trialing") // trialing | active | past_due | canceled
+  amount           Float    @default(0)
+  currency         String   @default("INR")
+  interval         String   @default("month") // month | year
+  currentPeriodEnd DateTime?
+  purchased        DateTime?
+  canceledAt       DateTime?
+  createdAt        DateTime @default(now())
+
+  @@index([tenantId, userId])
+  @@index([tenantId, status])
+}
+
+// ---- CRM: Contacts (Phase 13) ----
+
+model Contact {
+  id         String   @id @default(uuid())
+  tenantId   String
+  extra      Json?     // old ClickHouse `extra` blob
+  ownerId    String?  // user who owns this lead
+  owner      User?    @relation(fields: [ownerId], references: [id])
+  firstName  String
+  lastName   String?
+  email      String?
+  phone      String?
+  company    String?
+  tags       String[]
+  status     String   @default("lead") // lead | customer | prospect | churned
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tenantId, ownerId])
+  @@index([tenantId, status])
+  @@index([tenantId, email])
+}
+
+// ---- Settings & Configuration (Phase 15) ----
+
+model Setting {
+  id        String   @id @default(uuid())
+  tenantId  String
+  key       String
+  value     Json     // arbitrary typed config (string | number | bool | object)
+  group     String   @default("general") // general | seo | email | payments ...
+  label     String?
+  status    String   @default("active")
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, group])
+}
+
+// ---- LMS / Quiz domain (Phase 22) ----
+// Reverse-engineered from old ClickHouse resources (api/packages/quiz/*).
+// Old `quiz.extra` JSON (question/answer/solution/correct_ans/marks) is split:
+// first-class fields -> columns; `answer` (options array) + open `extra` -> Json.
+
+model Quiz {
+  id         String   @id @default(uuid())
+  tenantId   String
+  topicId    String?
+  quesLevel  String?  // easy | medium | hard
+  quesLang   String   @default("english") // english | hindi
+  quesType   String   @default("mcq") // mcq | single_answer | one_direction | multiple_correct | paper
+  question   String
+  answer     Json?    // options array (old extra.answer)
+  correctAns String?
+  solution   String?
+  marks      Int      @default(1)
+  quesTag    String[]
+  examTag    String[]
+  status     String   @default("active") // active | pending | inactive | hidden
+  likeCount  Int      @default(0)
+  extra      Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tenantId, topicId])
+  @@index([tenantId, quesType])
+  @@index([tenantId, status])
+}
+
+model QuizSet {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  topicId     String?
+  topic       Topic?   @relation(fields: [topicId], references: [id])
+  examId      String?  // -> Exam (old exam)
+  exam        Exam?    @relation(fields: [examId], references: [id])
+  topicList   Json?    // array of topic ids (old topiclist)
+  numQuiz     Int      @default(0)
+  description String?
+  extra       Json?
+  status      String   @default("active") // active | hidden | draft
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, topicId])
+  @@index([tenantId, status])
+}
+
+model Exam {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  parentId  String?  // self-relation (boards/classes/subjects)
+  topicId   String?
+  examType  String[]
+  examGroup String[]
+  seoGroup  String[]
+  status    String   @default("active") // active | hidden | pending
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, parentId])
+  @@index([tenantId, status])
+  quizSets   QuizSet[]
+  notes      Note[]
+  videos     VideoList[]
+  subscriptions Subscription[]
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  tenantId  String
+  title     String
+  topicId   String?
+  topic     Topic?   @relation(fields: [topicId], references: [id])
+  examId    String?  // -> Exam (old exam)
+  exam      Exam?    @relation(fields: [examId], references: [id])
+  body      String?
+  order     Int      @default(0)
+  status    String   @default("active") // active | hidden | draft
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, topicId])
+  @@index([tenantId, status])
+}
+
+// ---- LMS: delivery + engagement (Phase 22, continued) ----
+
+model LiveClass {
+  id          String   @id @default(uuid())
+  tenantId    String
+  title       String
+  description String?
+  instructor  String?
+  link        String?
+  image       String?
+  datetime    DateTime?
+  duration    Int      @default(0)
+  subject     String?
+  topicId     String?
+  series      String?
+  session     String?
+  recordings  Json?
+  tags        String[]
+  status      String   @default("active") // active | hidden | draft
+  extra       Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, topicId])
+  @@index([tenantId, status])
+}
+
+model VideoList {
+  id        String   @id @default(uuid())
+  tenantId  String
+  title     String
+  topicId   String?
+  topic     Topic?   @relation(fields: [topicId], references: [id])
+  vid       String?
+  ytVid     String?
+  hlsVid    String?
+  mirrors   Json?
+  content   String?
+  priority  Int      @default(0)
+  length    Int      @default(0)
+  ecomPlan  Json?
+  examId    String?  // -> Exam (old exam)
+  exam      Exam?    @relation(fields: [examId], references: [id])
+  tags      String[]
+  status    String   @default("active") // active | hidden | draft
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, topicId])
+  @@index([tenantId, status])
+  reviews      Review[]
+  subscriptions Subscription[]
+}
+
+model QuizComment {
+  id        String   @id @default(uuid())
+  tenantId  String
+  qid       String? // -> Quiz
+  uid       String? // -> User
+  name      String?
+  email     String?
+  comment   String
+  url       String?
+  likeCount Int      @default(0)
+  upvote    Int      @default(0)
+  downvote  Int      @default(0)
+  noteId    String?  // -> Note (old nid)
+  status    String   @default("pending") // active | pending | hidden | spam
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, qid])
+  @@index([tenantId, status])
+}
+
+model CurrentAffairs {
+  id        String    @id @default(uuid())
+  tenantId  String
+  title     String
+  link      String?
+  date      DateTime?
+  status    String    @default("active") // active | hidden | draft
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([tenantId, status])
+}
+
+// ---- Network admin domain (Phase 23) ----
+
+model Invoice {
+  id            String   @id @default(uuid())
+  tenantId      String
+  title         String
+  amount        Float?
+  date          DateTime?
+  period        String?
+  type          String   @default("subscription") // subscription | commission | refund | other
+  status        String   @default("pending") // paid | pending | cancelled | overdue
+  uid           String?  // -> User
+  affiliateName String?
+  payment       Json?
+  message       String?
+  extra         Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, uid])
+}
+
+model Ticket {
+  id            String   @id @default(uuid())
+  tenantId      String
+  title         String
+  message       String
+  parent        String?  // self-relation
+  priority      String   @default("medium") // low | medium | high | urgent
+  status        String   @default("open") // open | pending | resolved | closed
+  type          String   @default("general") // general | billing | technical | affiliate
+  uid           String?  // -> User
+  moduleId      String?  // -> Module
+  uploads       Json?
+  affiliateName String?
+  extra         Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, parent])
+  @@index([tenantId, uid])
+}
+
+model Staff {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String   @unique
+  email       String?
+  title       String?
+  department  String?
+  managerName String?
+  skype       String?
+  wechat      String?
+  image       String?
+  address     String?
+  payment     Json?
+  permissions Json?
+  comment     String?
+  status      String   @default("active") // active | inactive
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, department])
+}
+
+model Domain {
+  id           String   @id @default(uuid())
+  tenantId     String
+  name         String   @unique
+  type         String   @default("primary") // primary | parked | redirect
+  scheme       String   @default("https") // http | https
+  status       String   @default("active") // active | inactive
+  processStatus String  @default("live") // live | pending | suspended
+  hidden       Boolean  @default(false)
+  comment      String?
+  extra        Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model Module {
+  id               String   @id @default(uuid())
+  tenantId         String
+  name             String   @unique
+  parent           String?  // self-relation
+  subscriptionType String   @default("free") // free | paid | enterprise
+  resultFormat     String?
+  newStatus        String?
+  status           String   @default("active")
+  extra            Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tenantId, parent])
+}
+
+model Subscriber {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String?
+  email     String?
+  phone     String?
+  city      String?
+  state     String?
+  country   String?
+  gender    String?  // m | f | o
+  dob       DateTime?
+  avatar    String?
+  refid     String?
+  verified  Boolean  @default(false)
+  status    String   @default("active") // active | inactive | blocked
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, country])
+}
+
+model Event {
+  id     String   @id @default(uuid())
+  tenantId String
+  name   String
+  email  String?
+  phone  String?
+  reason String?
+  tags   String[]
+  uid    String? // -> User
+  status String   @default("new") // new | contacted | done | cancelled
+  extra  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, uid])
+}
+
+model Notice {
+  id       String   @id @default(uuid())
+  tenantId String
+  message  String
+  type     String   @default("inapp") // email | sms | push | inapp
+  subtype  String?
+  fromid   String? // -> User
+  toid     String? // -> User
+  totype   String   @default("user") // user | staff | publisher
+  readtime DateTime?
+  status   String   @default("sent") // sent | delivered | failed | read
+  extra    Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, toid])
+}
+
+// ---- Publisher admin domain (Phase 23) ----
+
+model PublisherProfile {
+  id            String   @id @default(uuid())
+  tenantId      String
+  name          String   @unique
+  companyname   String?
+  email         String?
+  phone         String?
+  website       String?
+  address       String?
+  city          String?
+  avatar        String?
+  skype         String?
+  payment       Json?
+  paymentMethod String?
+  points        Int      @default(0)
+  verified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId, verified])
+}
+
+model PublisherToken {
+  id      String   @id @default(uuid())
+  tenantId String
+  name    String
+  token   String?
+  apps    Json?
+  domains Json?
+  ips     Json?
+  status  String   @default("active") // active | inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+// ---- Auxiliary resources (parity with old ClickHouse tables) ----
+
+model BlogCategory {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  slug      String?
+  image     String?
+  type      String? // category type (e.g. tutorial / news)
+  status    String   @default("active") // active | hidden
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model BlogComment {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  email     String?
+  comment   String
+  postId    String? // old blog post id (-> BlogPost.legacyId)
+  authorId  String? // old user id (-> User.legacyId)
+  status    String   @default("pending") // pending | approved | spam
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, postId])
+  @@index([tenantId, status])
+}
+
+model AskQuestion {
+  id        String   @id @default(uuid())
+  tenantId  String
+  question  String
+  userId    String? // old user id (-> User.legacyId)
+  status    String   @default("pending")
+  extra     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model RaiseProblem {
+  id        String   @id @default(uuid())
+  tenantId  String
+  issue     String?
+  problem   String?
+  quizId    String? // old quiz id (-> Quiz.legacyId)
+  url       String?
+  userName  String?
+  userId    String? // old user id (-> User.legacyId)
+  noteId    String? // -> Note (old nid)
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model SuccessStory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  author      String?
+  description String?
+  image       String?
+  tags        String[]
+  brand       String?
+  status      String   @default("active")
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, status])
+}

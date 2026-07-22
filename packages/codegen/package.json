@@ -1,0 +1,22 @@
+{
+  "name": "@lakshya/codegen",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "generate": "tsx src/run.ts"
+  },
+  "dependencies": {
+    "@lakshya/core": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9",
+    "tsx": "^4.16.2"
+  }
+}

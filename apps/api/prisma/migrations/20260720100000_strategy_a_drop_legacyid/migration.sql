@@ -1,0 +1,45 @@
+-- Strategy A: new Postgres `id` = old ClickHouse primary-key value verbatim.
+-- The legacyId column is now redundant (id IS the old id), so drop it from
+-- every model to keep the new schema clean (no legacy-named columns).
+ALTER TABLE "Tenant" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "User" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Role" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "UserRole" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Topic" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "BlogPost" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Category" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Product" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Order" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "OrderItem" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Media" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "MediaVariant" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Review" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Cart" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "CartItem" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Coupon" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Subscription" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Contact" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Setting" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Quiz" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "QuizSet" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Exam" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Note" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "LiveClass" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "VideoList" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "QuizComment" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "CurrentAffairs" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Invoice" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Ticket" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Staff" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Domain" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Module" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Subscriber" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Event" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "Notice" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "PublisherProfile" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "PublisherToken" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "BlogCategory" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "BlogComment" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "AskQuestion" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "RaiseProblem" DROP COLUMN IF EXISTS "legacyId";
+ALTER TABLE "SuccessStory" DROP COLUMN IF EXISTS "legacyId";

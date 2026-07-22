@@ -1,0 +1,33 @@
+# Lakshya New — local dev stack
+# Usage:  docker compose up -d
+#         docker compose down
+
+services:
+  pg:
+    image: postgres:16-alpine
+    container_name: lakshya-pg
+    environment:
+      POSTGRES_USER: lakshya
+      POSTGRES_PASSWORD: lakshya_pass
+      POSTGRES_DB: lakshya
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # ClickHouse — disabled, not used by the app at runtime.
+  # Was only needed for one-time migration from old DB. Uncomment to re-enable.
+  # ch:
+  #   image: clickhouse/clickhouse-server:24-alpine
+  #   container_name: lakshya-ch
+  #   environment:
+  #     CLICKHOUSE_DB: lakshya_logs
+  #     CLICKHOUSE_USER: default
+  #     CLICKHOUSE_PASSWORD: ch_pass
+  #   ports:
+  #     - "8123:8123"
+  #   restart: unless-stopped
+
+volumes:
+  pgdata:

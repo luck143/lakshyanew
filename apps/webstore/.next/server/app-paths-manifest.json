@@ -1,0 +1,16 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/cart/[id]/checkout/route": "app/api/cart/[id]/checkout/route.js",
+  "/api/cart/[id]/items/route": "app/api/cart/[id]/items/route.js",
+  "/api/cart/[id]/route": "app/api/cart/[id]/route.js",
+  "/api/cart/route": "app/api/cart/route.js",
+  "/api/orders/[id]/pay/route": "app/api/orders/[id]/pay/route.js",
+  "/blog/page": "app/blog/page.js",
+  "/blog/[slug]/page": "app/blog/[slug]/page.js",
+  "/page": "app/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/cart/page": "app/cart/page.js",
+  "/collections/[slug]/page": "app/collections/[slug]/page.js",
+  "/products/[slug]/page": "app/products/[slug]/page.js",
+  "/products/page": "app/products/page.js"
+}

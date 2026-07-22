@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -u
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+LOG_DIR="$ROOT/logs"
+mkdir -p "$LOG_DIR"
+
+: "${DB_URL:=postgresql://lakshya:***@localhost:5432/lakshya?schema=public}"
+: "${JWT_SECRET:=lakshya-dev-secret-change-me}"
+: "${DEFAULT_TENANT:=default}"
+: "${ADMIN_TENANT:=default}"
+: "${PORT:=3001}"
+: "${ADMIN_PORT:=3100}"
+: "${PUB_PORT:=3101}"
+: "${WEB_PORT:=3000}"
+
+resolve_port() {
+  case "$1" in
+    api) echo "$PORT";;
+    admin) echo "$ADMIN_PORT";;
+    publisher) echo "$PUB_PORT";;
+    web) echo "$WEB_PORT";;
+    *) echo "$2";;
+  esac
+}
+
+free_port() {
+  ss -ltnp 2>/dev/null | awk -v port="$1" '$0 ~ ":"port" " {print}' | grep -oE 'pid=[0-9]+' | cut -d= -f2
+}
+
+port_in_use() {
+  ss -ltnp 2>/dev/null | awk -v port="$1" '$0 ~ ":"port" " {found=1} END{exit !found}'
+}
+
+stop_service() {
+  local name="$1"
+  local port
+  port="$(resolve_port "$name" "")"
+
+  local pids
+  pids="$(free_port "$port")"
+  if [ -n "${pids:-}" ]; then
+    echo "Stopping ${name} pid=${pids}"
+    kill ${pids} 2>/dev/null || true
+    sleep 1
+    kill -9 ${pids} 2>/dev/null || true
+  fi
+
+  local rem
+  rem="$(free_port "$port")"
+  if [ -n "${rem:-}" ]; then
+    echo "Port ${port} still occupied after stop"
+  fi
+
+  echo "Stopped ${name}"
+}
+
+start_service() {
+  local name="$1"
+  local pkg="$2"
+  local script="$3"
+  local port
+  port="$(resolve_port "$name" "")"
+
+  if port_in_use "$port"; then echo "Port ${port} busy, cannot start ${name}"; return 1; fi
+
+  local log="$LOG_DIR/${name}.log"
+  : > "$log"
+
+  echo "Starting ${name} on ${port} via ${pkg}"
+  case "$name" in
+    api)
+      cd "$ROOT/apps/api" && setsid env DB_URL="$DB_URL" JWT_SECRET="$JWT_SECRET" DEFAULT_TENANT="$DEFAULT_TENANT" ADMIN_TENANT="$ADMIN_TENANT" PORT="$PORT" pnpm exec tsx "$script" >> "$log" 2>&1 < /dev/null &
+      ;;
+    admin)
+      cd "$ROOT/apps/admin" && setsid env DB_URL="$DB_URL" JWT_SECRET="$JWT_SECRET" DEFAULT_TENANT="$DEFAULT_TENANT" ADMIN_TENANT="$ADMIN_TENANT" ADMIN_PORT="$ADMIN_PORT" pnpm exec tsx "$script" >> "$log" 2>&1 < /dev/null &
+      ;;
+    publisher)
+      cd "$ROOT/apps/admin-publisher" && setsid env DB_URL="$DB_URL" JWT_SECRET="$JWT_SECRET" DEFAULT_TENANT="$DEFAULT_TENANT" ADMIN_TENANT="$ADMIN_TENANT" PUBLISHER_PORT="$PUB_PORT" pnpm exec tsx "$script" >> "$log" 2>&1 < /dev/null &
+      ;;
+  esac
+
+  local pid=$!
+  echo "${name} started pid=${pid} port=${port} log=${log}"
+}
+
+start_web() {
+  local port="$WEB_PORT"
+  if port_in_use "$port"; then echo "Port ${port} busy, cannot start web"; return 1; fi
+
+  local log="$LOG_DIR/web.log"
+  : > "$log"
+
+  echo "Starting web on ${port}"
+  cd "$ROOT/apps/webstore" && setsid env API_BASE="http://localhost:3001" pnpm run start >> "$log" 2>&1 < /dev/null &
+
+  local pid=$!
+  echo "web started pid=${pid} port=${port} log=${log}"
+}
+
+if [ "${1:-}" = "stop" ]; then
+  if [ -n "${2:-}" ]; then
+    stop_service "$2"
+    exit 0
+  fi
+
+  echo "Stopping all services..."
+  for n in api admin publisher web; do
+    stop_service "$n" || true
+  done
+  exit 0
+fi
+
+if [ "${1:-}" = "status" ]; then
+  echo "Canonical ports: api=${PORT} admin=${ADMIN_PORT} publisher=${PUB_PORT} web=${WEB_PORT}"
+  echo "Ports/services:"
+  ss -ltnp 2>/dev/null | grep -E ":${PORT} |:${ADMIN_PORT} |:${PUB_PORT} |:${WEB_PORT} " || true
+  exit 0
+fi
+
+if [ "${1:-}" = "restart" ]; then
+  if [ -n "${2:-}" ]; then
+    "$ROOT/scripts/runtime/start" stop "$2"
+    sleep 2
+    "$ROOT/scripts/runtime/start" "$2"
+    exit 0
+  fi
+  "$ROOT/scripts/runtime/start" stop
+  sleep 2
+  "$ROOT/scripts/runtime/start" all
+  exit 0
+fi
+
+START_SERVICES="${1:-all}"
+
+if [ "$START_SERVICES" = "all" ]; then
+  "$ROOT/scripts/runtime/start" stop || true
+  # Wait for ports to be fully released after stop
+  for p in "$PORT" "$ADMIN_PORT" "$PUB_PORT" "$WEB_PORT"; do
+    for i in $(seq 1 10); do
+      if port_in_use "$p"; then
+        sleep 1
+      else
+        break
+      fi
+    done
+  done
+
+  start_service "api" "@lakshya/api" "src/server.ts"
+  sleep 2
+  start_service "admin" "@lakshya/admin" "src/server.ts"
+  sleep 2
+  start_service "publisher" "@lakshya/admin-publisher" "src/server.ts"
+  sleep 2
+  start_web
+else
+  case "$START_SERVICES" in
+    api) start_service "api" "@lakshya/api" "src/server.ts" ;;
+    admin) start_service "admin" "@lakshya/admin" "src/server.ts" ;;
+    publisher) start_service "publisher" "@lakshya/admin-publisher" "src/server.ts" ;;
+    web) start_web ;;
+    *) echo "Unknown service: $START_SERVICES"; exit 1 ;;
+  esac
+fi
+
+echo
+echo "API:        http://localhost:${PORT}/health"
+echo "Admin:      http://localhost:${ADMIN_PORT}/"
+echo "Publisher: http://localhost:${PUB_PORT}/"
+echo "Storefront: http://localhost:${WEB_PORT}/"
+echo
+echo "Run: $ROOT/scripts/runtime/stop"
