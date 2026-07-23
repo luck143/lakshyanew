@@ -15,11 +15,20 @@ function baseZodForType(type: FieldType): ZodTypeAny {
     case 'enum':
       return z.string(); // options enforced separately
     case 'int':
-      return z.number().int();
+      return z.preprocess((v) => (typeof v === 'string' && v.trim() !== '' ? Number(v) : v), z.number().int());
     case 'float':
-      return z.number();
+      return z.preprocess((v) => (typeof v === 'string' && v.trim() !== '' ? Number(v) : v), z.number());
     case 'bool':
-      return z.boolean();
+      // Tolerate string booleans from HTML forms ("true"/"false", "1"/"0", "Yes"/"No").
+      return z.preprocess((v) => {
+        if (typeof v === 'string') {
+          const s = v.trim().toLowerCase();
+          if (['true', '1', 'yes', 'y', 'on'].includes(s)) return true;
+          if (['false', '0', 'no', 'n', 'off', ''].includes(s)) return false;
+          return v; // let z.boolean() reject invalid
+        }
+        return v;
+      }, z.boolean());
     case 'date':
       return z.string(); // ISO date
     case 'datetime':

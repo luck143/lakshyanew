@@ -65,9 +65,22 @@ export function listViewMeta(resource: Resource) {
   const columns: Record<string, string> = {};
   const sortables: Record<string, string> = {};
   const filters: Record<string, string> = {};
+  // Honour an explicit column list (e.g. set by the Resource Builder).
+  // Accepts either an array of keys or an object map (key -> label).
+  const explicit = resource.listView?.columns;
+  if (Array.isArray(explicit)) {
+    for (const key of explicit) {
+      const f = (listFields as any)[key];
+      if (f) columns[key] = f.label;
+    }
+  } else if (explicit && typeof explicit === 'object') {
+    for (const [key, label] of Object.entries(explicit)) {
+      if ((listFields as any)[key]) columns[key] = label as string;
+    }
+  }
   for (const [key, f] of Object.entries(listFields)) {
     const ui = f.ui ?? {};
-    if (ui.columns) columns[key] = f.label;
+    if (ui.columns && !columns[key]) columns[key] = f.label;
     if (ui.sortable) sortables[key] = f.label;
     if (ui.filterable) filters[key] = f.label;
   }

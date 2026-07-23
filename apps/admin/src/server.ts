@@ -207,7 +207,12 @@ th{text-align:left}
 .bulkbar{position:sticky;top:64px;z-index:4}
 .quick-create .row{align-items:end}
 
-/* Menu */
+/* Form groups (ui.group) */
+.form-group{background:#fff;border:1px solid var(--neu-line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;box-shadow:0 8px 24px rgba(15,23,41,.06)}
+.form-group > h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--neu-muted);font-weight:800;border-bottom:1px solid var(--neu-line);padding-bottom:8px}
+[data-theme="dark"] .form-group{background:#0b1220;border-color:#1e293b}
+[data-theme="dark"] .form-group > h3{border-color:#1e293b}
+
 .menu{display:none;position:absolute;right:0;top:28px;background:#ffffff;border:1px solid var(--neu-line);border-radius:var(--radius-sm);box-shadow:0 12px 34px rgba(15,23,41,.12);min-width:160px;z-index:20;padding:4px}
 .menu.show{display:block}
 .menu a,.menu form{display:flex;width:100%}
@@ -285,7 +290,7 @@ function renderStatsPresetCounts(meta: any, rows: any[]): string { return buildP
 })()); }
 function renderSidebar(nav: any[], _basePath: string, activePath = ''): string {
   const ICONS: Record<string, string> = { users: '👤', roles: '🛡', topics: '🏷', 'blog-posts': '📝', products: '📦', orders: '🧾', coupons: '🎟', media: '🖼', settings: '⚙', questions: '❓', exams: '📋', notes: '📚', 'live-classes': '🎥', videos: '🎬', invoices: '💳', tickets: '🎫', staff: '👥', domains: '🌐', modules: '🧩', subscribers: '📬', events: '📅', notices: '📢', publishers: '🏢' };
-  return nav
+  const navHtml = nav
     .map(
       (sec) =>
         `<div class="nav-grp">${escapeHtml(sec.group)}</div>` +
@@ -298,26 +303,67 @@ function renderSidebar(nav: any[], _basePath: string, activePath = ''): string {
           .join(''),
     )
     .join('');
+  const builderActive = activePath.startsWith('/_builder') ? ' active' : '';
+  const builderHtml = `<div class="nav-grp">Builder</div>
+    <a class="navlink${builderActive}" href="/_builder"><span class="ic">🛠</span><span>Resource Builder</span></a>`;
+  return navHtml + builderHtml;
 }
 
 // ---- value formatting -------------------------------------------------------
-function formatCell(fieldType: string | undefined, val: any, enumOpts?: Record<string, string>): string {
-  if (val === null || val === undefined || val === '') return '<span style="color:var(--muted)">—</span>';
-  if (fieldType === 'bool' || fieldType === 'boolean') {
+function formatCell(fieldType: string | undefined, val: any, field?: any): string {
+  const ui = field?.ui ?? {};
+  const render = ui.render ?? null;
+  const empty = '<span style="color:var(--muted)">—</span>';
+  if (val === null || val === undefined || val === '') return empty;
+
+  // Explicit display hints take precedence over type-based defaults.
+  if (render === 'badge') {
+    const label = field?.options ? (field.options[String(val)] ?? String(val)) : String(val);
+    const cls = String(val).toLowerCase();
+    const badgeClass = ['active', 'published', 'ok', 'paid', 'done'].includes(cls) ? 'badge ok'
+      : ['inactive', 'hidden', 'disabled', 'banned', 'unpaid', 'failed', 'cancelled'].includes(cls) ? 'badge danger'
+      : ['pending', 'draft', 'archived', 'out_of_stock', 'review'].includes(cls) ? 'badge warn' : 'badge';
+    return `<span class="${badgeClass}">${escapeHtml(label)}</span>`;
+  }
+  if (render === 'boolean' || fieldType === 'bool' || fieldType === 'boolean') {
     const b = val === true || val === 'true' || val === 1 || val === '1';
     return `<span class="bool ${b ? 'y' : 'n'}">${b ? '✓ Yes' : '✕ No'}</span>`;
   }
-  if (fieldType === 'enum' && enumOpts) {
-    const label = enumOpts[String(val)] ?? String(val);
+  if (render === 'currency') {
+    const num = Number(val);
+    if (!isNaN(num)) {
+      const sym = ui.currency ?? '₹';
+      const formatted = num.toLocaleString('en-IN', { minimumFractionDigits: Number.isInteger(num) ? 0 : 2, maximumFractionDigits: 2 });
+      return `<span class="mono">${escapeHtml(sym)}${formatted}</span>`;
+    }
+  }
+  if (render === 'color') {
+    const c = String(val);
+    return `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:${escapeHtml(c)};border:1px solid var(--neu-line-2);display:inline-block"></span>${escapeHtml(c)}</span>`;
+  }
+  if (render === 'link') {
+    const href = (ui.href ?? String(val)).replace(/\{[^}]*\}/g, () => String(val));
+    const external = /^https?:\/\//.test(href);
+    return `<a class="lnk" href="${escapeHtml(href)}" ${external ? 'target="_blank" rel="noopener"' : ''}>${escapeHtml(String(val))}</a>`;
+  }
+  if (render === 'avatar') {
+    const src = String(val);
+    return `<span style="display:inline-flex;align-items:center;gap:6px"><img src="${escapeHtml(src)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--neu-line-2)" onerror="this.style.display='none'">${escapeHtml(String(val))}</span>`;
+  }
+  if (render === 'datetime' || fieldType === 'date' || fieldType === 'datetime') {
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return `<span class="mono">${escapeHtml(d.toLocaleString())}</span>`;
+  }
+  if (render === 'json' || (val && typeof val === 'object')) {
+    const j = JSON.stringify(val);
+    return `<span class="mono">${escapeHtml(j.slice(0, 60))}${j.length > 60 ? '…' : ''}</span>`;
+  }
+  if (fieldType === 'enum' && field?.options) {
+    const label = field.options[String(val)] ?? String(val);
     const cls = String(val).toLowerCase();
-    const badgeClass = cls === 'active' ? 'badge ok' : cls === 'inactive' || cls === 'disabled' ? 'badge danger' : 'badge';
+    const badgeClass = ['active', 'published', 'ok'].includes(cls) ? 'badge ok' : ['inactive', 'hidden', 'disabled', 'banned'].includes(cls) ? 'badge danger' : 'badge';
     return `<span class="${badgeClass}">${escapeHtml(label)}</span>`;
   }
-  if (fieldType === 'date' || fieldType === 'datetime') {
-    const d = new Date(val);
-    if (!isNaN(d.getTime())) return escapeHtml(d.toLocaleString());
-  }
-  if (val && typeof val === 'object') return `<span class="mono">${escapeHtml(JSON.stringify(val).slice(0, 60))}${JSON.stringify(val).length > 60 ? '…' : ''}</span>`;
   const s = String(val);
   return escapeHtml(s.length > 80 ? s.slice(0, 80) + '…' : s);
 }
@@ -564,7 +610,7 @@ async function renderTable(meta: any, rows: any[], api: any, state: { sortby?: s
         .map((c) => {
           const f = listFields[c];
           if (f?.type === 'relation' && relLabels[c]) return `<td data-col="${escAttr(c)}">${escapeHtml(relLabels[c][String(r[c])] ?? String(r[c] ?? ''))}</td>`;
-          return `<td data-col="${escAttr(c)}">${formatCell(f?.type, r[c], f?.options)}</td>`;
+          return `<td data-col="${escAttr(c)}">${formatCell(f?.type, r[c], f)}</td>`;
         })
         .join('');
       const actions = [];
@@ -611,37 +657,65 @@ async function renderForm(meta: any, api: any, row?: any): Promise<string> {
       if (!f) return '';
       const raw = row?.[key];
       const val = raw == null ? '' : typeof raw === 'object' ? JSON.stringify(raw) : String(raw);
+      const ui = f.ui ?? {};
+      const ph = ui.placeholder ? ` placeholder="${escAttr(ui.placeholder)}"` : '';
       const lab = `<label>${escapeHtml(f.label)}${f.required ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`;
       const help = f.help ? `<div class="help">${escapeHtml(f.help)}</div>` : '';
       const req = f.required ? ' required' : '';
+      const select = (optsHtml: string) => `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<select name="${escAttr(key)}"${req}><option value="">—</option>${optsHtml}</select></div>`;
       if (f.type === 'enum') {
         const opts = Object.entries(f.options ?? {})
           .map(([v, l]) => `<option value="${escAttr(v)}"${String(raw) === v ? ' selected' : ''}>${escapeHtml(String(l))}</option>`)
           .join('');
-        return `<div class="field">${lab}${help}<select name="${escAttr(key)}"${req}><option value="">—</option>${opts}</select></div>`;
+        return select(opts);
       }
       if (f.type === 'relation') {
-        const opts = await relationOptions(api, f);
-        const o = opts.map((o) => `<option value="${escAttr(o.value)}"${String(raw) === o.value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
-        return `<div class="field">${lab}${help}<select name="${escAttr(key)}"${req}><option value="">—</option>${o}</select></div>`;
+        const opts = (await relationOptions(api, f)).map((o) => `<option value="${escAttr(o.value)}"${String(raw) === o.value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
+        return select(opts);
       }
-      if (f.type === 'bool') return `<div class="field" style="display:flex;align-items:center;gap:8px;margin-top:18px"><input type="checkbox" name="${escAttr(key)}" value="true"${raw === true || raw === 'true' ? ' checked' : ''} style="width:18px;height:18px;cursor:pointer"><span style="font-weight:600;color:#334155">${escapeHtml(f.label)}</span>${help}</div>`;
-      if (f.type === 'media') return `<div class="field">${lab}${help}<input type="file" name="${escAttr(key)}_file"><input type="text" name="${escAttr(key)}" value="${escAttr(val)}" placeholder="or paste URL"></div>`;
-      if (f.type === 'tags') return `<div class="field">${lab}${help}<input type="text" name="${escAttr(key)}" value="${escAttr(Array.isArray(raw) ? raw.join(', ') : val)}" placeholder="comma separated"></div>`;
-      if (f.type === 'int' || f.type === 'float' || f.type === 'number') return `<div class="field">${lab}${help}<input type="number" step="any" name="${escAttr(key)}" value="${escAttr(val)}"${req}></div>`;
-      if (f.type === 'date') return `<div class="field">${lab}${help}<input type="date" name="${escAttr(key)}" value="${escAttr(val)}"${req}></div>`;
-      if (f.type === 'datetime') return `<div class="field">${lab}${help}<input type="datetime-local" name="${escAttr(key)}" value="${escAttr(val)}"${req}></div>`;
-      const tag = f.type === 'richtext' || f.type === 'text' ? 'textarea' : 'input';
-      return `<div class="field">${lab}${help}<${tag} name="${escAttr(key)}" ${tag === 'textarea' ? '' : 'value="' + escAttr(val) + '"'}${req}>${tag === 'textarea' ? escapeHtml(val) : ''}</${tag}></div>`;
+      // Static options from ui.options (non-enum fixed set)
+      if (ui.options && !f.type.startsWith('bool')) {
+        const opts = Object.entries(ui.options)
+          .map(([v, l]) => `<option value="${escAttr(v)}"${String(raw) === v ? ' selected' : ''}>${escapeHtml(String(l))}</option>`)
+          .join('');
+        return select(opts);
+      }
+      if (f.type === 'bool') return `<div class="field" data-group="${escAttr(ui.group ?? '')}" style="display:flex;align-items:center;gap:8px;margin-top:18px"><input type="checkbox" name="${escAttr(key)}" value="true"${raw === true || raw === 'true' ? ' checked' : ''} style="width:18px;height:18px;cursor:pointer"><span style="font-weight:600;color:#334155">${escapeHtml(f.label)}</span>${help}</div>`;
+      if (f.type === 'media') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<input type="file" name="${escAttr(key)}_file"><input type="text" name="${escAttr(key)}" value="${escAttr(val)}" placeholder="or paste URL"></div>`;
+      if (f.type === 'tags') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<input type="text" name="${escAttr(key)}" value="${escAttr(Array.isArray(raw) ? raw.join(', ') : val)}" placeholder="comma separated"></div>`;
+      if (ui.input === 'textarea' || f.type === 'richtext' || f.type === 'text') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<textarea name="${escAttr(key)}"${ph}${req}>${escapeHtml(val)}</textarea></div>`;
+      if (ui.input === 'number' || f.type === 'int' || f.type === 'float' || f.type === 'number') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<input type="number" step="any" name="${escAttr(key)}" value="${escAttr(val)}"${ph}${req}></div>`;
+      if (ui.input === 'date' || f.type === 'date') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<input type="date" name="${escAttr(key)}" value="${escAttr(val)}"${ph}${req}></div>`;
+      if (ui.input === 'datetime-local' || f.type === 'datetime') return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<input type="datetime-local" name="${escAttr(key)}" value="${escAttr(val)}"${ph}${req}></div>`;
+      const tag = ui.input === 'textarea' ? 'textarea' : 'input';
+      return `<div class="field" data-group="${escAttr(ui.group ?? '')}">${lab}${help}<${tag} name="${escAttr(key)}" ${tag === 'textarea' ? '' : 'value="' + escAttr(val) + '"'}${ph}${req}>${tag === 'textarea' ? escapeHtml(val) : ''}</${tag}></div>`;
     }),
   );
+
+  // Group fields into labelled cards when ui.group is set, else flat row layout.
+  const grouped = keys.some((k) => (create[k] ?? update[k])?.ui?.group);
+  let formBody: string;
+  if (grouped) {
+    const order: string[] = [];
+    const buckets: Record<string, string[]> = {};
+    keys.forEach((k, i) => {
+      const f = create[k] ?? update[k];
+      const g = (f?.ui?.group as string) ?? '';
+      if (!inputs[i]) return;
+      (buckets[g] ??= []).push(inputs[i] as string);
+      if (g && !order.includes(g)) order.push(g);
+    });
+    formBody = order.map((g) => `<div class="form-group"><h3>${escapeHtml(g)}</h3>${buckets[g].join('')}</div>`).join('')
+      + (buckets[''] ? `<div class="form-group">${buckets[''].join('')}</div>` : '');
+  } else {
+    formBody = `<div class="row">${inputs.slice(0, Math.ceil(keys.length / 2)).join('')}</div>\n    <div class="row">${inputs.slice(Math.ceil(keys.length / 2)).join('')}</div>`;
+  }
 
   const action = row ? `/${meta.name}/${escAttr(String(row.id))}` : `/${meta.name}`;
   const verb = row ? 'Save changes' : `Create ${escapeHtml(meta.label)}`;
   const backBtn = row ? `<a class="btn sec" href="/${escAttr(meta.name)}">← Cancel</a>` : '';
   return `<form method="post" action="${action}">
-    <div class="row">${inputs.slice(0, Math.ceil(keys.length / 2)).join('')}</div>
-    <div class="row">${inputs.slice(Math.ceil(keys.length / 2)).join('')}</div>
+    ${formBody}
     <div style="display:flex;gap:10px;margin-top:8px">
       <button class="btn" type="submit">${verb}</button>
       ${backBtn}
@@ -704,6 +778,89 @@ export async function buildApp(surface: AdminSurface = { role: 'network', title:
     </div>
     <div class="card empty" style="margin-top:0">Select a resource from the sidebar to manage its records.</div>`;
     return reply.type('text/html').send(renderShell(renderSidebar(nav, surface.basePath), content));
+  });
+
+  // ---- Resource Builder (network-admin) ----
+  const FIELD_TYPES = ['string','text','richtext','int','float','bool','enum','date','datetime','relation','media','tags','json','url','uuid'];
+  function fieldRow(f: any = {}, idx: number): string {
+    const key = f.key ?? '';
+    const label = f.label ?? '';
+    const type = f.type ?? 'string';
+    const req = f.required ? ' checked' : '';
+    const cols = f.ui?.columns ? ' checked' : '';
+    const search = f.ui?.searchable ? ' checked' : '';
+    const filter = f.ui?.filterable ? ' checked' : '';
+    const opts = f.options ? (typeof f.options === 'string' ? f.options : JSON.stringify(f.options)) : '';
+    const types = FIELD_TYPES.map(t => `<option value="${t}"${t===type?' selected':''}>${t}</option>`).join('');
+    const isEnum = type === 'enum';
+    const isRel = type === 'relation';
+    return `<tr class="fb-field" data-idx="${idx}">
+      <td><input class="fb-k" value="${escapeHtml(key)}" placeholder="field_key" required></td>
+      <td><input class="fb-l" value="${escapeHtml(label)}" placeholder="Label" required></td>
+      <td><select class="fb-t">${types}</select></td>
+      <td style="text-align:center"><input class="fb-req" type="checkbox"${req}></td>
+      <td style="text-align:center"><input class="fb-col" type="checkbox"${cols}></td>
+      <td style="text-align:center"><input class="fb-sea" type="checkbox"${search}></td>
+      <td style="text-align:center"><input class="fb-fil" type="checkbox"${filter}></td>
+      <td><input class="fb-opt" value="${escapeHtml(opts)}" placeholder="${isEnum?'key:Label,..':isRel?'resource:name':'—'}"></td>
+      <td style="text-align:center"><button type="button" class="sm danger fb-del">✕</button></td>
+    </tr>`;
+  }
+  function renderBuilder(existing?: any): string {
+    const ex = existing ?? {};
+    const name = ex.name ?? '';
+    const label = ex.label ?? '';
+    const group = ex.group ?? 'Builder';
+    const table = ex.table ?? (name ? name.charAt(0).toUpperCase()+name.slice(1) : '');
+    const fields = ex.fields ? Object.entries(ex.fields).map(([k,f]:any)=>({key:k,...f})) : [{key:'title',label:'Title',type:'string',required:['create','update'],ui:{columns:true,searchable:true}}];
+    const fieldsHtml = fields.map((f,i)=>fieldRow(f,i)).join('');
+    return `<div class="topbar" style="position:relative;border-bottom:0;margin:0 0 16px">
+        <div><h1>Resource Builder</h1><div class="sub">Define a new resource — the table, CRUD, admin UI and validation are generated automatically.</div></div>
+      </div>
+      <form id="fb-form" class="card" style="margin-bottom:16px">
+        <div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field"><label>Resource name (key)*</label><input name="name" value="${escapeHtml(name)}" placeholder="e.g. project_note" ${name?'readonly':''} required pattern="[a-z][a-z0-9_]*"></div>
+          <div class="field"><label>Label*</label><input name="label" value="${escapeHtml(label)}" placeholder="Project Note"></div>
+          <div class="field"><label>Group (sidebar section)</label><input name="group" value="${escapeHtml(group)}" placeholder="Builder"></div>
+          <div class="field"><label>DB table name*</label><input name="table" value="${escapeHtml(table)}" placeholder="ProjectNote"></div>
+        </div>
+        <h3 style="margin:16px 0 8px">Fields</h3>
+        <table class="fb-table" style="width:100%"><thead><tr>
+          <th>Key</th><th>Label</th><th>Type</th><th>Req</th><th>Col</th><th>Search</th><th>Filter</th><th>Options (enum/relation)</th><th></th>
+        </tr></thead><tbody>${fieldsHtml}</tbody></table>
+        <button type="button" class="btn sec sm" id="fb-add" style="margin-top:8px">+ Add field</button>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+          <button type="submit" class="btn" id="fb-save">${name?'Update resource':'Create resource'}</button>
+          <span id="fb-msg" style="font-weight:700"></span>
+        </div>
+      </form>
+      <div id="fb-list" class="card"></div>`;
+  }
+  app.get('/_builder', async (req, reply) => {
+    const nav = (await api('GET', '/api/meta/nav')).data;
+    return reply.type('text/html').send(renderShell(renderSidebar(nav, surface.basePath, '/_builder'), renderBuilder()));
+  });
+  app.get('/_builder/:name', async (req, reply) => {
+    const nav = (await api('GET', '/api/meta/nav')).data;
+    const name = (req.params as any).name;
+    let existing: any = null;
+    try { existing = (await api('GET', `/api/_meta/resource/${name}`)).data; } catch { /* new */ }
+    return reply.type('text/html').send(renderShell(renderSidebar(nav, surface.basePath, '/_builder'), renderBuilder(existing)));
+  });
+  // Builder save + list (JSON API used by the inline JS in /admin.js)
+  app.post('/_builder/api', async (req, reply) => {
+    const payload = (req.body as any);
+    const res = await api('POST', '/api/_meta/resource', payload);
+    return reply.code(res.status === 1 ? 201 : 422).send(res);
+  });
+  app.get('/_builder/api/list', async (_req, reply) => {
+    const res = await api('GET', '/api/_meta/resource');
+    return reply.send(res);
+  });
+  app.delete('/_builder/api/:name', async (req, reply) => {
+    const drop = (req.query as any).drop === '1' ? '?drop=1' : '';
+    const res = await api('DELETE', `/api/_meta/resource/${(req.params as any).name}${drop}`);
+    return reply.send(res);
   });
 
   app.get('/:resource', async (req, reply) => {
@@ -1109,6 +1266,101 @@ export async function buildApp(surface: AdminSurface = { role: 'network', title:
             }
           });
         });
+      })();
+
+      // ---- Resource Builder client wiring ----
+      (function(){
+        const q = (s,r=document)=>r.querySelector(s);
+        const qa = (s,r=document)=>[...r.querySelectorAll(s)];
+        function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        async function loadList(){
+          const box = q('#fb-list'); if(!box) return;
+          try{
+            const res = await fetch('/_builder/api/list'); const j = await res.json();
+            const items = (j.data||[]);
+            if(!items.length){ box.innerHTML = '<h3 style="margin:0 0 8px">Existing builder resources</h3><div class="empty" style="padding:14px">No custom resources yet. Create one above.</div>'; return; }
+            box.innerHTML = '<h3 style="margin:0 0 8px">Existing builder resources ('+items.length+')</h3>' + items.map(it=>
+              '<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--neu-line)">'+
+              '<a class="lnk" href="/'+it.name+'">'+escapeHtml(it.label)+'</a>'+
+              '<span style="color:var(--neu-muted);font-size:11px">'+escapeHtml(it.table)+'</span>'+
+              '<span style="margin-left:auto;display:flex;gap:6px">'+
+                '<a class="sm" href="/_builder/'+it.name+'">Edit</a>'+
+                '<button class="sm danger" data-del="'+it.name+'">Delete</button>'+
+              '</span></div>').join('');
+            qa('[data-del]',box).forEach(b=>b.addEventListener('click',async()=>{
+              if(!confirm('Delete resource definition "'+b.getAttribute('data-del')+'"? (data table kept unless you drop it)')) return;
+              await fetch('/_builder/api/'+b.getAttribute('data-del'),{method:'DELETE'});
+              window.toast?.('Deleted'); loadList();
+            }));
+          }catch(e){ box.innerHTML='<div class="empty">Failed to load list</div>'; }
+        }
+        function collect(){
+          const form = q('#fb-form'); if(!form) return null;
+          const fields = qa('.fb-field',form).map(tr=>{
+            const key = q('.fb-k',tr).value.trim();
+            const label = q('.fb-l',tr).value.trim();
+            const type = q('.fb-t',tr).value;
+            if(!key || !label) return null;
+            const f = { key, label, type };
+            if(q('.fb-req',tr).checked) f.required=['create','update'];
+            const om = {};
+            if(q('.fb-col',tr).checked) om.columns=true;
+            if(q('.fb-sea',tr).checked) om.searchable=true;
+            if(q('.fb-fil',tr).checked) om.filterable=true;
+            if(Object.keys(om).length) f.ui=om;
+            const opt = q('.fb-opt',tr).value.trim();
+            if(opt){
+              if(type==='enum'){ const o={}; opt.split(',').forEach(p=>{const [k,v]=p.split(':'); if(k) o[k.trim()]=(v||k).trim();}); f.options=o; }
+              else if(type==='relation'){ const m=opt.match(/resource:\s*(\w+)/); f.options={resource: m?m[1]:opt}; }
+            }
+            return f;
+          }).filter(Boolean);
+          const payload = {
+            name: form.name.value.trim(),
+            label: form.label.value.trim(),
+            group: form.group.value.trim()||'Builder',
+            table: form.table.value.trim(),
+            fields: fields.map(f=>({key:f.key,label:f.label,type:f.type,...(f.required?{required:f.required}:{}),...(f.ui?{ui:f.ui}:{}),...(f.options?{options:f.options}:{})})),
+            columns: fields.filter(f=>f.ui&&f.ui.columns).map(f=>f.key),
+          };
+          return payload;
+        }
+        function addRow(){
+          const tbody = q('.fb-table tbody'); if(!tbody) return;
+          const tr = document.createElement('tr');
+          tr.className='fb-field';
+          tr.innerHTML = '<td><input class="fb-k" placeholder="field_key" required></td>'+
+            '<td><input class="fb-l" placeholder="Label" required></td>'+
+            '<td><select class="fb-t"></select></td>'+
+            '<td style="text-align:center"><input class="fb-req" type="checkbox"></td>'+
+            '<td style="text-align:center"><input class="fb-col" type="checkbox"></td>'+
+            '<td style="text-align:center"><input class="fb-sea" type="checkbox"></td>'+
+            '<td style="text-align:center"><input class="fb-fil" type="checkbox"></td>'+
+            '<td><input class="fb-opt" placeholder="—"></td>'+
+            '<td style="text-align:center"><button type="button" class="sm danger fb-del">✕</button></td>';
+          const sel = tr.querySelector('.fb-t');
+          ['string','text','richtext','int','float','bool','enum','date','datetime','relation','media','tags','json','url','uuid'].forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+          tr.querySelector('.fb-del').addEventListener('click',()=>tr.remove());
+          tbody.appendChild(tr);
+        }
+        const form = q('#fb-form');
+        if(form){
+          q('#fb-add',form)?.addEventListener('click',addRow);
+          qa('.fb-del',form).forEach(b=>b.addEventListener('click',()=>b.closest('tr')?.remove()));
+          form.addEventListener('submit',async(e)=>{
+            e.preventDefault();
+            const payload = collect(); const msg = q('#fb-msg');
+            if(!payload || !payload.name || !payload.label || !payload.table){ msg.textContent='Fill name, label and table.'; msg.style.color='var(--danger)'; return; }
+            if(!payload.fields.length){ msg.textContent='Add at least one field.'; msg.style.color='var(--danger)'; return; }
+            try{
+              const res = await fetch('/_builder/api',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+              const j = await res.json();
+              if(j.status===1){ msg.textContent='✓ '+(payload.name?'updated':'created')+' — table created.'; msg.style.color='var(--green)'; setTimeout(()=>location.reload(),700); }
+              else { msg.textContent='✕ '+(j.message||'Failed'); msg.style.color='var(--danger)'; }
+            }catch(err){ msg.textContent='✕ Network error'; msg.style.color='var(--danger)'; }
+          });
+          loadList();
+        }
       })();
     `);
   });

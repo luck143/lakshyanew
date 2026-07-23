@@ -25,6 +25,26 @@ class ResourceRegistry {
     return this.resources.get(name);
   }
 
+  // Upsert: register if absent, otherwise replace the existing definition.
+  // Used by the Resource Builder so edits / delete+recreate propagate to the
+  // live registry (the plain `register` throws on duplicate names).
+  upsert(input: DefineResourceInput): Resource {
+    const resource: Resource = {
+      labelPlural: input.label + 's',
+      versioned: false,
+      ...input,
+    };
+    this.validate(resource);
+    this.resources.set(resource.name, resource);
+    return resource;
+  }
+
+  // Remove a definition from the live registry (e.g. when a builder resource
+  // is deleted). Compile-time resources are never removed here.
+  unregister(name: string): void {
+    this.resources.delete(name);
+  }
+
   all(): Resource[] {
     return [...this.resources.values()];
   }

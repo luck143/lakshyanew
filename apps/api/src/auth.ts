@@ -108,8 +108,13 @@ export async function requireSom(
 ): Promise<{ ok: boolean; scope: 'global' | 'tenant' | 'self' | 'none'; reason?: string }> {
   const soms = user.soms ?? (prisma ? await loadEffectiveSoms(prisma, user) : []);
   const isSuperadmin = user.permissions.includes('role_superadmin');
+  const gated = MODULES_ACCESS.some((m) => m.object === object);
+  // SOM gate only applies to the hardcoded "module" objects. Regular
+  // resources (including builder-created ones) are gated by role/scope
+  // alone — a network admin may manage them without a per-object SOM grant.
   const allowed =
     isSuperadmin ||
+    !gated ||
     (MODULES_ACCESS.some((m) => m.object === object && m.mode === mode) &&
       soms.some((s) => s.object === object && s.mode === mode));
   if (!allowed) return { ok: false, scope: 'none', reason: 'som' };

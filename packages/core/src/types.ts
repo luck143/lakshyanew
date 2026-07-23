@@ -35,6 +35,19 @@ export interface FieldUi {
   sortable?: boolean;
   filterable?: boolean;
   searchable?: boolean;
+  // Display hint for list cells (consumed by admin formatCell).
+  // 'text' | 'badge' | 'boolean' | 'currency' | 'color' | 'link' | 'avatar' | 'datetime' | 'json'
+  render?: string;
+  currency?: string;        // ISO code or symbol for render:'currency' (default ₹)
+  // Form grouping: fields sharing a group render inside a labelled card.
+  group?: string;
+  // Static select options for non-enum fields (e.g. a string with a fixed set).
+  options?: Record<string, string>;
+  // Override the input widget in create/update forms:
+  // 'input' | 'textarea' | 'select' | 'checkbox' | 'number' | 'date' | 'datetime-local' | 'file' | 'tags'
+  input?: string;
+  // For render:'link' — href template, e.g. '/user/{id}' or absolute url field
+  href?: string;
 }
 
 export interface FieldPermissions {

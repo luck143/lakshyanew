@@ -5,7 +5,9 @@
 
 import { PrismaClient } from '@prisma/client';
 import { registry, inputSchemaFor, type Resource } from '@lakshya/core';
+import { resolveModel, isRawModel } from './dynamic.js';
 import type { AuthUser } from './auth.js';
+import { randomUUID as cryptoRandomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 export { prisma };
@@ -57,8 +59,16 @@ export async function createResource(
     throw new ApiError(422, 'Validation failed: ' + JSON.stringify(parsed.error.issues));
   }
 
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
   const data = hasTenantFor(resource) ? { ...parsed.data, tenantId: user.tenantId } : { ...parsed.data };
+  // Raw (builder) resources have no Prisma delegate to auto-generate ids,
+  // so we generate one from crypto.randomUUID() for generated `id` fields.
+  if (isRawModel(resource, prisma)) {
+    const idField = (resource.fields as any)?.id;
+    if (idField && (idField as any).generated && !(data as any).id) {
+      (data as any).id = cryptoRandomUUID();
+    }
+  }
   // unique check (mirrors old "already exists" guard for natural keys).
   // Only fields explicitly flagged `unique: true` are treated as natural keys.
   for (const [fname, fdef] of Object.entries(resource.fields)) {
@@ -98,7 +108,7 @@ export async function updateResource(
     throw new ApiError(422, 'Validation failed: ' + JSON.stringify(parsed.error.issues));
   }
 
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
   const existing = await model.findFirst({ where: hasTenantFor(resource) ? { id, tenantId: user.tenantId } : { id } });
   if (!existing) throw new ApiError(404, `${resource.label} not found`);
 
@@ -116,7 +126,7 @@ export async function getResource(
 ): Promise<unknown> {
   const resource = registry.get(resourceName);
   if (!resource) throw new ApiError(404, `Unknown resource ${resourceName}`);
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
   const row = await model.findFirst({ where: hasTenantFor(resource) ? { id, tenantId: user.tenantId } : { id } });
   if (!row) throw new ApiError(404, `${resource.label} not found`);
   return row;
@@ -129,7 +139,7 @@ export async function listResource(
 ): Promise<{ data: unknown[]; page: number; limit: number; total: number }> {
   const resource = registry.get(resourceName);
   if (!resource) throw new ApiError(404, `Unknown resource ${resourceName}`);
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
 
   const page = Math.max(1, Number(params.page ?? 1));
   const limit = Math.min(1000, Math.max(1, Number(params.limit ?? resource.listView?.pageSize ?? 50)));
@@ -180,11 +190,18 @@ export async function listResource(
   }
 
   // Free-text search across searchable string/text/richtext/url fields (OR).
+  // If no field is explicitly flagged searchable, fall back to ALL
+  // string-like fields so search "just works" for builder resources.
   const q = typeof params.q === 'string' ? params.q.trim() : '';
   if (q) {
-    const searchFields = Object.entries(resource.fields)
+    let searchFields = Object.entries(resource.fields)
       .filter(([, f]) => (f as any).ui?.searchable && ['string', 'text', 'richtext', 'url'].includes((f as any).type))
       .map(([k]) => k);
+    if (searchFields.length === 0) {
+      searchFields = Object.entries(resource.fields)
+        .filter(([, f]) => ['string', 'text', 'richtext', 'url'].includes((f as any).type))
+        .map(([k]) => k);
+    }
     if (searchFields.length) {
       where.OR = searchFields.map((f) => ({ [f]: { contains: q, mode: 'insensitive' } }));
     }
@@ -211,7 +228,7 @@ export async function deleteResource(
 ): Promise<void> {
   const resource = registry.get(resourceName);
   if (!resource) throw new ApiError(404, `Unknown resource ${resourceName}`);
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
   const existing = await model.findFirst({ where: hasTenantFor(resource) ? { id, tenantId: user.tenantId } : { id } });
   if (!existing) throw new ApiError(404, `${resource.label} not found`);
   await model.delete({ where: { id } });
@@ -227,7 +244,7 @@ export async function publicList(
   const resource = registry.get(resourceName);
   if (!resource) throw new ApiError(404, `Unknown resource ${resourceName}`);
   if (!resource.webView?.landing) throw new ApiError(403, `Resource ${resourceName} is not public`);
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
 
   const page = Math.max(1, Number(params.page ?? 1));
   const limit = Math.min(1000, Math.max(1, Number(params.limit ?? resource.listView?.pageSize ?? 50)));
@@ -270,11 +287,18 @@ export async function publicList(
   }
 
   // Free-text search across searchable string/text/richtext/url fields (OR).
+  // If no field is explicitly flagged searchable, fall back to ALL
+  // string-like fields so search "just works" for builder resources.
   const q = typeof params.q === 'string' ? params.q.trim() : '';
   if (q) {
-    const searchFields = Object.entries(resource.fields)
+    let searchFields = Object.entries(resource.fields)
       .filter(([, f]) => (f as any).ui?.searchable && ['string', 'text', 'richtext', 'url'].includes((f as any).type))
       .map(([k]) => k);
+    if (searchFields.length === 0) {
+      searchFields = Object.entries(resource.fields)
+        .filter(([, f]) => ['string', 'text', 'richtext', 'url'].includes((f as any).type))
+        .map(([k]) => k);
+    }
     if (searchFields.length) {
       where.OR = searchFields.map((f) => ({ [f]: { contains: q, mode: 'insensitive' } }));
     }
@@ -300,7 +324,7 @@ export async function publicGet(
   const resource = registry.get(resourceName);
   if (!resource) throw new ApiError(404, `Unknown resource ${resourceName}`);
   if (!resource.webView?.detail) throw new ApiError(403, `Resource ${resourceName} is not public`);
-  const model = clientModel(resource);
+  const model = resolveModel(resource, prisma);
   const slugField = resource.webView?.slugField;
   const where: any = { tenantId };
   if (slugField) where[slugField] = key;

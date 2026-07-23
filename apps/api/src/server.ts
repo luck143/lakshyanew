@@ -33,6 +33,7 @@ import {
 } from './guestCart.js';
 import { authorizePayment } from './payments.js';
 import './resources.js'; // registers resources
+import { loadBuilderResources, listBuilderResources, getBuilderResource, createBuilderResource, deleteBuilderResource, dropBuilderTable } from './builder-store.js';
 
 const app = Fastify({ logger: false });
 
@@ -92,6 +93,11 @@ app.addHook('preHandler', async (req, _reply) => {
     const user = verifyToken(token);
     if (user) (req as any).user = user;
   }
+  // Keep builder resources (persisted in DB) live without restart.
+  // Throttled via TTL cache inside loadBuilderResources().
+  if ((req as any).url?.startsWith('/api/')) {
+    try { await loadBuilderResources(); } catch { /* non-fatal */ }
+  }
 });
 
 function getUser(req: any): AuthUser {
@@ -106,6 +112,12 @@ function scopeFor(role: ScopeRole | undefined): ScopeRole {
 }
 
 // ---- Generic CRUD routes ----
+// Boot: load any Resource-Builder definitions from the DB into the
+// registry so they are live immediately (no restart, no Prisma regen).
+loadBuilderResources()
+  .then((n) => { if (n) console.log(`[builder] loaded ${n} resource(s) from store`); })
+  .catch((e) => console.warn('[builder] boot load failed:', e?.message));
+
 const crudOps = ['list', 'get', 'create', 'update', 'delete'] as const;
 
 async function requireScope(resourceName: string, op: (typeof crudOps)[number], req: any): Promise<AuthUser> {
@@ -357,6 +369,56 @@ app.get('/api/meta/:resource', async (req, reply) => {
   const r = registry.get(resource);
   if (!r) return reply.code(404).send({ status: 0, data: null, message: 'Unknown resource' });
   return reply.send({ status: 1, data: adminMeta(r), message: 'ok' });
+});
+
+// ---- Resource Builder API (network-admin only) ----
+// Lets admins define NEW resources at runtime. Definitions are validated
+// by @lakshya/core, persisted to the `lakshya_resource` table, the
+// physical Postgres table is created, and the def is registered live.
+async function requireBuilderAdmin(req: any): Promise<AuthUser> {
+  const user = getUser(req);
+  if (user.role !== 'network' && user.role !== 'admin') {
+    throw new ApiError(403, 'Forbidden: only network admins may edit resource definitions');
+  }
+  return user;
+}
+
+// LIST builder-managed resource definitions
+app.get('/api/_meta/resource', async (req, reply) => {
+  await requireBuilderAdmin(req);
+  const items = await listBuilderResources();
+  return reply.send({ status: 1, data: items, message: 'ok' });
+});
+
+// GET one builder definition (full editable JSON)
+app.get('/api/_meta/resource/:name', async (req, reply) => {
+  await requireBuilderAdmin(req);
+  const def = await getBuilderResource((req.params as any).name);
+  if (!def) return reply.code(404).send({ status: 0, data: null, message: 'Not found' });
+  return reply.send({ status: 1, data: def, message: 'ok' });
+});
+
+// CREATE / UPSERT a builder resource (validates + creates table + registers)
+app.post('/api/_meta/resource', async (req, reply) => {
+  await requireBuilderAdmin(req);
+  try {
+    const def = await createBuilderResource((req.body as any));
+    return reply.code(201).send({ status: 1, data: def, message: 'Resource created' });
+  } catch (e: any) {
+    const status = e?.status ?? 422;
+    return reply.code(status).send({ status: 0, data: null, message: e?.message ?? 'Failed to create resource' });
+  }
+});
+
+// DELETE a builder definition (keeps physical table unless ?drop=1)
+app.delete('/api/_meta/resource/:name', async (req, reply) => {
+  await requireBuilderAdmin(req);
+  const { name } = req.params as any;
+  const def = await getBuilderResource(name);
+  if (!def) return reply.code(404).send({ status: 0, data: null, message: 'Not found' });
+  if ((req.query as any).drop === '1') await dropBuilderTable(def.table);
+  await deleteBuilderResource(name);
+  return reply.send({ status: 1, data: null, message: 'Resource definition removed' });
 });
 
 // GET /api/:resource/:id
