@@ -1,0 +1,126 @@
+{
+  "labelPlural": "Orders",
+  "versioned": false,
+  "name": "order",
+  "table": "Order",
+  "label": "Order",
+  "group": "E-commerce",
+  "icon": "cart",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "userId": {
+      "type": "relation",
+      "label": "Customer",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "group": "Order"
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "shipped": "Shipped",
+        "cancelled": "Cancelled"
+      },
+      "default": "pending",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "render": "badge",
+        "group": "Order"
+      }
+    },
+    "total": {
+      "type": "float",
+      "label": "Total",
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "render": "currency",
+        "currency": "₹",
+        "group": "Order"
+      }
+    },
+    "currency": {
+      "type": "string",
+      "label": "Currency",
+      "default": "INR",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Order"
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "status",
+      "total",
+      "currency",
+      "userId"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "userId"
+  ]
+}

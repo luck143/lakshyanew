@@ -1,0 +1,164 @@
+{
+  "labelPlural": "Success Stories",
+  "versioned": false,
+  "name": "successstory",
+  "table": "SuccessStory",
+  "label": "Success Story",
+  "group": "CMS",
+  "icon": "star",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "author": {
+      "type": "string",
+      "label": "Author",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "description": {
+      "type": "text",
+      "label": "Description",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "image": {
+      "type": "url",
+      "label": "Image",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "brand": {
+      "type": "string",
+      "label": "Brand",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "publishedAt": {
+      "type": "datetime",
+      "label": "Published At",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "author",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status"
+  ]
+}

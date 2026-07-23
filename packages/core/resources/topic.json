@@ -1,0 +1,144 @@
+{
+  "labelPlural": "Topics",
+  "versioned": false,
+  "name": "topic",
+  "table": "Topic",
+  "label": "Topic",
+  "group": "Content",
+  "icon": "tag",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1,
+        "max": 200
+      },
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "sortable": true,
+        "filterable": true,
+        "searchable": true
+      }
+    },
+    "parentId": {
+      "type": "relation",
+      "label": "Parent",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ],
+      "ui": {
+        "filterable": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "pending": "Pending"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "content": {
+      "type": "richtext",
+      "label": "Content",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    },
+    "sortOrder": {
+      "type": "int",
+      "label": "Sort Order",
+      "default": 0,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "status",
+      "sortOrder"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "parentId"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "name",
+    "detail": true
+  }
+}

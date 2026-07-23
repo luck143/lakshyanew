@@ -1,0 +1,190 @@
+{
+  "labelPlural": "Notices",
+  "versioned": false,
+  "name": "notice",
+  "table": "Notice",
+  "label": "Notice",
+  "group": "Network",
+  "icon": "bell",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "message": {
+      "type": "text",
+      "label": "Message",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "type": {
+      "type": "enum",
+      "label": "Type",
+      "options": {
+        "email": "Email",
+        "sms": "SMS",
+        "push": "Push",
+        "inapp": "In-App"
+      },
+      "default": "inapp",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "subtype": {
+      "type": "string",
+      "label": "Subtype",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "fromid": {
+      "type": "relation",
+      "label": "From",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "toid": {
+      "type": "relation",
+      "label": "To",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "totype": {
+      "type": "enum",
+      "label": "To Type",
+      "options": {
+        "user": "User",
+        "staff": "Staff",
+        "publisher": "Publisher"
+      },
+      "default": "user",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "readtime": {
+      "type": "datetime",
+      "label": "Read At",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "read": "Read"
+      },
+      "default": "sent",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "extra": {
+      "type": "json",
+      "label": "Extra",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "message",
+      "type",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "type"
+  ]
+}

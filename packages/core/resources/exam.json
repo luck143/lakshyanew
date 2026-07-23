@@ -1,0 +1,180 @@
+{
+  "labelPlural": "Exams",
+  "versioned": false,
+  "name": "exam",
+  "table": "Exam",
+  "label": "Exam",
+  "group": "LMS",
+  "icon": "award",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "parentId": {
+      "type": "relation",
+      "label": "Parent Exam",
+      "options": {
+        "resource": "exam",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "topicId": {
+      "type": "relation",
+      "label": "Topic",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "examType": {
+      "type": "tags",
+      "label": "Exam Type",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "examGroup": {
+      "type": "tags",
+      "label": "Exam Group",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "seoGroup": {
+      "type": "tags",
+      "label": "SEO Group",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "pending": "Pending"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "extra": {
+      "type": "json",
+      "label": "Extra",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "examType",
+      "status"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "parentId",
+    "status"
+  ]
+}

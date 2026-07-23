@@ -1,0 +1,163 @@
+{
+  "labelPlural": "Events",
+  "versioned": false,
+  "name": "event",
+  "table": "Event",
+  "label": "Event",
+  "group": "Network",
+  "icon": "calendar",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "email": {
+      "type": "string",
+      "label": "Email",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "email": true
+      }
+    },
+    "phone": {
+      "type": "string",
+      "label": "Phone",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "reason": {
+      "type": "text",
+      "label": "Reason",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "uid": {
+      "type": "relation",
+      "label": "User",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "new": "New",
+        "contacted": "Contacted",
+        "done": "Done",
+        "cancelled": "Cancelled"
+      },
+      "default": "new",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "email",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status"
+  ]
+}

@@ -11,6 +11,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
 model Tenant {
   id        String   @id @default(uuid())
   name      String
@@ -42,7 +44,6 @@ model User {
   @@index([tenantId])
 }
 
-// Named role template — a set of SOM triples (mirrors users_modules_role).
 model Role {
   id          String   @id @default(uuid())
   tenantId    String
@@ -57,7 +58,6 @@ model Role {
   @@index([tenantId])
 }
 
-// user <-> role membership (mirrors users_modules_roles).
 model UserRole {
   id        String   @id @default(uuid())
   tenantId  String
@@ -106,8 +106,6 @@ model BlogPost {
 
   @@index([tenantId, status])
 }
-
-// ---- E-commerce (Phase 3) ----
 
 model Category {
   id        String   @id @default(uuid())
@@ -164,8 +162,6 @@ model Product {
   @@index([tenantId, status])
 }
 
-// ---- E-commerce: Orders (Phase 5) ----
-
 model Order {
   id        String      @id @default(uuid())
   tenantId String
@@ -204,8 +200,6 @@ model OrderItem {
   @@index([tenantId, productId])
 }
 
-// ---- Media & File Management (Phase 7) ----
-
 model Media {
   id           String   @id @default(uuid())
   tenantId     String
@@ -223,8 +217,6 @@ model Media {
   @@index([tenantId, mimeType])
 }
 
-// ---- imgen: Media variants (Phase 14) ----
-
 model MediaVariant {
   id       String  @id @default(uuid())
   tenantId String
@@ -239,8 +231,6 @@ model MediaVariant {
 
   @@index([tenantId, mediaId])
 }
-
-// ---- E-commerce: Reviews (Phase 9) ----
 
 model Review {
   id        String   @id @default(uuid())
@@ -264,8 +254,6 @@ model Review {
   @@index([tenantId, productId])
   @@index([tenantId, status])
 }
-
-// ---- E-commerce: Cart (Phase 10) ----
 
 model Cart {
   id        String     @id @default(uuid())
@@ -296,8 +284,6 @@ model CartItem {
   @@index([tenantId, productId])
 }
 
-// ---- E-commerce: Coupons (Phase 11) ----
-
 model Coupon {
   id          String    @id @default(uuid())
   tenantId    String
@@ -319,8 +305,6 @@ model Coupon {
 
   @@index([tenantId, status])
 }
-
-// ---- E-commerce: Subscriptions (Phase 12) ----
 
 model Subscription {
   id               String   @id @default(uuid())
@@ -348,8 +332,6 @@ model Subscription {
   @@index([tenantId, status])
 }
 
-// ---- CRM: Contacts (Phase 13) ----
-
 model Contact {
   id         String   @id @default(uuid())
   tenantId   String
@@ -372,8 +354,6 @@ model Contact {
   @@index([tenantId, email])
 }
 
-// ---- Settings & Configuration (Phase 15) ----
-
 model Setting {
   id        String   @id @default(uuid())
   tenantId  String
@@ -386,11 +366,6 @@ model Setting {
 
   @@index([tenantId, group])
 }
-
-// ---- LMS / Quiz domain (Phase 22) ----
-// Reverse-engineered from old ClickHouse resources (api/packages/quiz/*).
-// Old `quiz.extra` JSON (question/answer/solution/correct_ans/marks) is split:
-// first-class fields -> columns; `answer` (options array) + open `extra` -> Json.
 
 model Quiz {
   id         String   @id @default(uuid())
@@ -478,8 +453,6 @@ model Note {
   @@index([tenantId, status])
 }
 
-// ---- LMS: delivery + engagement (Phase 22, continued) ----
-
 model LiveClass {
   id          String   @id @default(uuid())
   tenantId    String
@@ -566,8 +539,6 @@ model CurrentAffairs {
 
   @@index([tenantId, status])
 }
-
-// ---- Network admin domain (Phase 23) ----
 
 model Invoice {
   id            String   @id @default(uuid())
@@ -728,8 +699,6 @@ model Notice {
   @@index([tenantId, toid])
 }
 
-// ---- Publisher admin domain (Phase 23) ----
-
 model PublisherProfile {
   id            String   @id @default(uuid())
   tenantId      String
@@ -766,8 +735,6 @@ model PublisherToken {
 
   @@index([tenantId, status])
 }
-
-// ---- Auxiliary resources (parity with old ClickHouse tables) ----
 
 model BlogCategory {
   id        String   @id @default(uuid())
@@ -844,4 +811,68 @@ model SuccessStory {
   updatedAt   DateTime @updatedAt
 
   @@index([tenantId, status])
+}
+
+model Lead {
+  tenantId  String
+  id        String @id @default(uuid())
+  name       String?
+  email      String?
+  stage      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectNote {
+  tenantId  String
+  id        String @id @default(uuid())
+  body       String?
+  title      String?
+  status     String?
+  priority   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QaCheck {
+  tenantId  String
+  id        String @id @default(uuid())
+  name       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReviewItem {
+  tenantId  String
+  id        String @id @default(uuid())
+  note       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskItem {
+  tenantId  String
+  id        String @id @default(uuid())
+  done       Boolean?
+  notes      String?
+  title      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TicketLog {
+  tenantId  String
+  id        String @id @default(uuid())
+  subject    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model lakshya_resource {
+  name       String   @id
+  label      String
+  table      String
+  definition Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

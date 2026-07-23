@@ -1,0 +1,199 @@
+{
+  "labelPlural": "Subscriptions",
+  "versioned": false,
+  "name": "subscription",
+  "table": "Subscription",
+  "label": "Subscription",
+  "group": "E-commerce",
+  "icon": "repeat",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "userId": {
+      "type": "relation",
+      "label": "Customer",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "plan": {
+      "type": "string",
+      "label": "Plan",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "trialing": "Trialing",
+        "active": "Active",
+        "past_due": "Past Due",
+        "canceled": "Canceled"
+      },
+      "default": "trialing",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "amount": {
+      "type": "float",
+      "label": "Amount",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "currency": {
+      "type": "string",
+      "label": "Currency",
+      "default": "INR",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "interval": {
+      "type": "enum",
+      "label": "Interval",
+      "options": {
+        "month": "Month",
+        "year": "Year"
+      },
+      "default": "month",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "currentPeriodEnd": {
+      "type": "datetime",
+      "label": "Renews On",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "canceledAt": {
+      "type": "datetime",
+      "label": "Canceled At",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "createdAt": {
+      "type": "datetime",
+      "label": "Created",
+      "visible": [
+        "list"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "userId",
+      "plan",
+      "status",
+      "amount",
+      "currentPeriodEnd"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "userId",
+    "status",
+    "interval"
+  ]
+}

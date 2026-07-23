@@ -1,0 +1,94 @@
+{
+  "labelPlural": "Carts",
+  "versioned": false,
+  "name": "cart",
+  "table": "Cart",
+  "label": "Cart",
+  "group": "E-commerce",
+  "icon": "cart",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "userId": {
+      "type": "relation",
+      "label": "Customer",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "converted": "Converted",
+        "abandoned": "Abandoned"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "createdAt": {
+      "type": "datetime",
+      "label": "Created",
+      "visible": [
+        "list"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "userId",
+      "status",
+      "createdAt"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "userId",
+    "status"
+  ]
+}

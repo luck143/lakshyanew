@@ -1,0 +1,175 @@
+{
+  "labelPlural": "Users",
+  "versioned": false,
+  "name": "user",
+  "table": "User",
+  "label": "User",
+  "group": "Access Control",
+  "icon": "user",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "label": "Email",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "email": true
+      },
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "searchable": true,
+        "render": "link",
+        "href": "mailto:{email}",
+        "group": "Account"
+      }
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "group": "Account",
+        "placeholder": "Full name"
+      }
+    },
+    "role": {
+      "type": "enum",
+      "label": "Role",
+      "options": {
+        "network": "Network",
+        "publisher": "Publisher",
+        "user": "User"
+      },
+      "default": "user",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "render": "badge",
+        "group": "Access"
+      }
+    },
+    "roles": {
+      "type": "json",
+      "label": "Direct SOM grants",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Access",
+        "input": "textarea",
+        "help": "Raw JSON triple-store grants."
+      }
+    },
+    "permissions": {
+      "type": "tags",
+      "label": "Permissions",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Access"
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "banned": "Banned"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "render": "badge",
+        "group": "Access"
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "email",
+      "name",
+      "role",
+      "status"
+    ],
+    "defaultSort": "email",
+    "pageSize": 50
+  },
+  "filters": [
+    "role",
+    "status"
+  ]
+}

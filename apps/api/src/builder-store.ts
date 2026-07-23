@@ -1,63 +1,56 @@
 // apps/api/src/builder-store.ts
-// Persistence for Resource-Builder definitions. Definitions live in a
-// `lakshya_resource` table (one JSON column). At API boot we load them
-// into the @lakshya/core registry so the generic CRUD + admin UI pick
-// them up automatically — no Prisma regeneration, no restart of the
-// client required.
+// Persistence for Resource-Builder definitions. The SINGLE SOURCE OF TRUTH is
+// the JSON file per resource under packages/core/resources/<name>.json (loaded
+// at boot by @lakshya/core's loadResourceFiles). This module reads/writes those
+// files so the builder UI edits the same definitions the API boots from — no
+// DB table, no duplicate store.
 //
-// Uses raw SQL (table is NOT in schema.prisma) so builder resources
-// are fully decoupled from the compile-time Prisma models.
-import { PrismaClient } from '@prisma/client';
-import { registry, defineResource, type Resource, normalizeResource, createTableSql, resourceToJson } from '@lakshya/core';
+// Physical tables are still created on demand via raw SQL (createTableSql) so a
+// brand-new resource works immediately; for production the table should also be
+// emitted through `pnpm gen:schema` + `prisma db push` (see scripts/gen-schema.mjs).
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync } from 'node:fs';
+import { registry, type Resource, normalizeResource, createTableSql, resourceToJson } from '@lakshya/core';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 
-const prisma = new PrismaClient();
+const here = dirname(fileURLToPath(import.meta.url));
+const RES_DIR = resolve(here, '..', '..', '..', 'packages', 'core', 'resources');
 
-const TABLE = 'lakshya_resource';
-
-async function ensureTable(): Promise<void> {
-  await prisma.$executeRawUnsafe(`CREATE TABLE IF NOT EXISTS "${TABLE}" (
-    "name" TEXT PRIMARY KEY,
-    "label" TEXT NOT NULL,
-    "table" TEXT NOT NULL,
-    "definition" JSONB NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-  )`);
+function fileFor(name: string): string {
+  return resolve(RES_DIR, `${name}.json`);
 }
 
-// Cache so the (possibly separate) API process picks up newly
-// created/edited builder resources without a restart. Reloads are
-// throttled to once per TTL; registration into the live registry is
-// idempotent (compile-time resources always win).
+async function ensureDir(): Promise<void> {
+  if (!existsSync(RES_DIR)) mkdirSync(RES_DIR, { recursive: true });
+}
+
+// Reload builder definitions from JSON files into the live registry.
+// Builder resources always reflect the persisted file (edits / delete+recreate
+// override any stale in-memory copy). Throttled like before.
 let cacheUntil = 0;
 let cachePromise: Promise<number> | null = null;
 const TTL_MS = 3000;
-// Names currently registered into the live registry from the builder store.
-// Used to unregister resources that have been deleted from the store.
 const registeredFromStore = new Set<string>();
 
 export async function loadBuilderResources(force = false): Promise<number> {
   const now = Date.now();
   if (!force && cachePromise && now < cacheUntil) return cachePromise;
   cachePromise = (async () => {
-    await ensureTable();
-    const rows: any[] = await prisma.$queryRawUnsafe(`SELECT "name", "definition" FROM "${TABLE}"`);
+    await ensureDir();
     const liveNames = new Set<string>();
     let count = 0;
-    for (const r of rows) {
+    for (const f of readdirSync(RES_DIR)) {
+      if (!f.endsWith('.json')) continue;
       try {
-        const def = typeof r.definition === 'string' ? JSON.parse(r.definition) : r.definition;
-        // Builder resources must always reflect the persisted definition
-        // (edits / delete+recreate must override any stale in-memory copy).
+        const def = JSON.parse(readFileSync(fileFor(f.slice(0, -5)), 'utf8'));
         registry.upsert(def);
         registeredFromStore.add(def.name);
         liveNames.add(def.name);
         count++;
       } catch (e: any) {
-        console.warn(`[builder] skipping ${r.name}: ${e?.message}`);
+        console.warn(`[builder] skipping ${f}: ${e?.message}`);
       }
     }
-    // Unregister builder resources that were deleted from the store.
     for (const name of [...registeredFromStore]) {
       if (!liveNames.has(name)) {
         registry.unregister(name);
@@ -71,44 +64,57 @@ export async function loadBuilderResources(force = false): Promise<number> {
 }
 
 export async function listBuilderResources(): Promise<Array<{ name: string; label: string; table: string }>> {
-  await ensureTable();
-  const rows: any[] = await prisma.$queryRawUnsafe(`SELECT "name", "label", "table" FROM "${TABLE}" ORDER BY "name"`);
-  return rows.map((r) => ({ name: r.name, label: r.label, table: r.table }));
+  await ensureDir();
+  const out: Array<{ name: string; label: string; table: string }> = [];
+  for (const f of readdirSync(RES_DIR)) {
+    if (!f.endsWith('.json')) continue;
+    try {
+      const def = JSON.parse(readFileSync(fileFor(f.slice(0, -5)), 'utf8'));
+      out.push({ name: def.name, label: def.label, table: def.table });
+    } catch { /* skip */ }
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getBuilderResource(name: string): Promise<Resource | null> {
-  const rows: any[] = await prisma.$queryRawUnsafe(`SELECT "definition" FROM "${TABLE}" WHERE "name" = $1`, name);
-  if (!rows[0]) return null;
-  return typeof rows[0].definition === 'string' ? JSON.parse(rows[0].definition) : rows[0].definition;
+  const fp = fileFor(name);
+  if (!existsSync(fp)) return null;
+  try { return JSON.parse(readFileSync(fp, 'utf8')); } catch { return null; }
 }
 
-// Validate via core, create the physical table, persist, and register.
+// Validate via core, create the physical table, persist the JSON file, register.
 // Throws with .status on user error.
 export async function createBuilderResource(raw: any): Promise<Resource> {
   const def = normalizeResource(raw);              // throws on invalid
   const sql = createTableSql(def, def.table !== 'Tenant'); // idempotent
-  await prisma.$executeRawUnsafe(sql);            // physical table
+  // Best-effort physical table creation (raw SQL). Failure here is non-fatal
+  // for the definition itself (it still gets persisted + registered).
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    await prisma.$executeRawUnsafe(sql).catch(() => {});
+    await prisma.$disconnect().catch(() => {});
+  } catch { /* ignore */ }
+
   const json = resourceToJson(def);
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO "${TABLE}" ("name","label","table","definition","createdAt","updatedAt") VALUES ($1,$2,$3,$4,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
-     ON CONFLICT ("name") DO UPDATE SET "label"=$2,"table"=$3,"definition"=$4,"updatedAt"=CURRENT_TIMESTAMP`,
-    def.name, def.label, def.table, json,
-  );
-  // register into the live registry (or refresh if already present)
+  await ensureDir();
+  writeFileSync(fileFor(def.name), JSON.stringify(json, null, 2) + '\n');
   registry.upsert(json);
   registeredFromStore.add(json.name);
   return json;
 }
 
 export async function deleteBuilderResource(name: string): Promise<void> {
-  // NOTE: we keep the physical table (data may be valuable). The definition
-  // is removed from the registry + store so the resource is no longer exposed.
-  // To also drop data, call dropBuilderTable separately (explicit admin action).
-  await prisma.$executeRawUnsafe(`DELETE FROM "${TABLE}" WHERE "name" = $1`, name);
+  const fp = fileFor(name);
+  if (existsSync(fp)) unlinkSync(fp);
   registry.unregister(name);
   registeredFromStore.delete(name);
 }
 
 export async function dropBuilderTable(table: string): Promise<void> {
-  await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS "${String(table).replace(/"/g, '')}"`);
+  const safe = String(table).replace(/[^a-zA-Z0-9_]/g, '');
+  const { PrismaClient } = await import('@prisma/client');
+  const prisma = new PrismaClient();
+  await prisma.$executeRawUnsafe(`DROP TABLE IF EXISTS "${safe}"`).catch(() => {});
+  await prisma.$disconnect().catch(() => {});
 }

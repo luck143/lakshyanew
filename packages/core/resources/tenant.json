@@ -1,0 +1,96 @@
+{
+  "labelPlural": "Tenants",
+  "versioned": false,
+  "name": "tenant",
+  "table": "Tenant",
+  "label": "Tenant",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1,
+        "max": 200
+      },
+      "ui": {
+        "columns": true,
+        "sortable": true,
+        "filterable": true
+      }
+    },
+    "domain": {
+      "type": "string",
+      "label": "Domain",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 3
+      },
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "settings": {
+      "type": "json",
+      "label": "Settings",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "domain"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "domain"
+  ]
+}

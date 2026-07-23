@@ -1,0 +1,256 @@
+{
+  "labelPlural": "Products",
+  "versioned": false,
+  "name": "product",
+  "table": "Product",
+  "label": "Product",
+  "group": "E-commerce",
+  "icon": "cart",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1,
+        "max": 300
+      },
+      "ui": {
+        "columns": true,
+        "sortable": true,
+        "filterable": true,
+        "searchable": true,
+        "group": "Basics",
+        "placeholder": "Product title"
+      }
+    },
+    "slug": {
+      "type": "string",
+      "label": "Slug",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "ui": {
+        "group": "Basics"
+      }
+    },
+    "description": {
+      "type": "richtext",
+      "label": "Description",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Content",
+        "input": "textarea",
+        "help": "Long-form product description (rich text)."
+      }
+    },
+    "price": {
+      "type": "float",
+      "label": "Price",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "render": "currency",
+        "currency": "₹",
+        "group": "Pricing & Inventory"
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "out_of_stock": "Out of Stock"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "render": "badge",
+        "group": "Pricing & Inventory"
+      }
+    },
+    "categoryId": {
+      "type": "relation",
+      "label": "Category",
+      "options": {
+        "resource": "category",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true,
+        "group": "Pricing & Inventory"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "label": "SKU",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Pricing & Inventory"
+      }
+    },
+    "stock": {
+      "type": "int",
+      "label": "Stock",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "group": "Pricing & Inventory"
+      }
+    },
+    "cover": {
+      "type": "media",
+      "label": "Cover Image",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Media"
+      }
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "group": "Media"
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "price",
+      "status",
+      "categoryId"
+    ],
+    "defaultSort": "title",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "categoryId"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "slug",
+    "detail": true
+  }
+}

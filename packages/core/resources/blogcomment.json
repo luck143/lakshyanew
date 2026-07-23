@@ -1,0 +1,141 @@
+{
+  "labelPlural": "Blog Comments",
+  "versioned": false,
+  "name": "blogcomment",
+  "table": "BlogComment",
+  "label": "Blog Comment",
+  "group": "Blog",
+  "icon": "message",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "label": "Email",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "comment": {
+      "type": "text",
+      "label": "Comment",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "postId": {
+      "type": "string",
+      "label": "Post",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "authorId": {
+      "type": "relation",
+      "label": "Author",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "spam": "Spam"
+      },
+      "default": "pending",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "postId",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status"
+  ]
+}

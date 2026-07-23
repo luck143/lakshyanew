@@ -1,0 +1,126 @@
+{
+  "labelPlural": "Modules",
+  "versioned": false,
+  "name": "module",
+  "table": "Module",
+  "label": "Module",
+  "group": "Network",
+  "icon": "grid",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "parent": {
+      "type": "relation",
+      "label": "Parent Module",
+      "options": {
+        "resource": "module",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "subscriptionType": {
+      "type": "enum",
+      "label": "Subscription",
+      "options": {
+        "free": "Free",
+        "paid": "Paid",
+        "enterprise": "Enterprise"
+      },
+      "default": "free",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "resultFormat": {
+      "type": "string",
+      "label": "Result Format",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "newStatus": {
+      "type": "string",
+      "label": "New Status",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "subscriptionType",
+      "parent"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "subscriptionType"
+  ]
+}

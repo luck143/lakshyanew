@@ -1,0 +1,53 @@
+{
+  "icon": "◈",
+  "name": "lead",
+  "group": "Builder",
+  "label": "Lead",
+  "table": "Lead",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "visible": [
+        "list",
+        "get"
+      ],
+      "generated": true
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "label": "Email"
+    },
+    "stage": {
+      "ui": {
+        "columns": true
+      },
+      "type": "enum",
+      "label": "Stage",
+      "options": {
+        "new": "New",
+        "won": "Won"
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "stage"
+    ]
+  },
+  "labelPlural": "Leads"
+}

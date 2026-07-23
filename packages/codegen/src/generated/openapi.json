@@ -5,9 +5,9 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/api/tenant": {
+    "/api/askquestion": {
       "get": {
-        "summary": "List Tenants",
+        "summary": "List Asked Questions",
         "responses": {
           "200": {
             "description": "ok"
@@ -15,7 +15,7 @@
         }
       },
       "post": {
-        "summary": "Create Tenant",
+        "summary": "Create Asked Question",
         "responses": {
           "201": {
             "description": "created"
@@ -23,20 +23,20 @@
         }
       }
     },
-    "/api/tenant/{id}": {
+    "/api/askquestion/{id}": {
       "get": {
-        "summary": "Get Tenant"
+        "summary": "Get Asked Question"
       },
       "patch": {
-        "summary": "Update Tenant"
+        "summary": "Update Asked Question"
       },
       "delete": {
-        "summary": "Delete Tenant"
+        "summary": "Delete Asked Question"
       }
     },
-    "/api/user": {
+    "/api/blogcategory": {
       "get": {
-        "summary": "List Users",
+        "summary": "List Blog Categories",
         "responses": {
           "200": {
             "description": "ok"
@@ -44,7 +44,7 @@
         }
       },
       "post": {
-        "summary": "Create User",
+        "summary": "Create Blog Category",
         "responses": {
           "201": {
             "description": "created"
@@ -52,20 +52,20 @@
         }
       }
     },
-    "/api/user/{id}": {
+    "/api/blogcategory/{id}": {
       "get": {
-        "summary": "Get User"
+        "summary": "Get Blog Category"
       },
       "patch": {
-        "summary": "Update User"
+        "summary": "Update Blog Category"
       },
       "delete": {
-        "summary": "Delete User"
+        "summary": "Delete Blog Category"
       }
     },
-    "/api/topic": {
+    "/api/blogcomment": {
       "get": {
-        "summary": "List Topics",
+        "summary": "List Blog Comments",
         "responses": {
           "200": {
             "description": "ok"
@@ -73,7 +73,7 @@
         }
       },
       "post": {
-        "summary": "Create Topic",
+        "summary": "Create Blog Comment",
         "responses": {
           "201": {
             "description": "created"
@@ -81,15 +81,15 @@
         }
       }
     },
-    "/api/topic/{id}": {
+    "/api/blogcomment/{id}": {
       "get": {
-        "summary": "Get Topic"
+        "summary": "Get Blog Comment"
       },
       "patch": {
-        "summary": "Update Topic"
+        "summary": "Update Blog Comment"
       },
       "delete": {
-        "summary": "Delete Topic"
+        "summary": "Delete Blog Comment"
       }
     },
     "/api/blogpost": {
@@ -119,209 +119,6 @@
       },
       "delete": {
         "summary": "Delete Blog Post"
-      }
-    },
-    "/api/category": {
-      "get": {
-        "summary": "List Categories",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Category",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/category/{id}": {
-      "get": {
-        "summary": "Get Category"
-      },
-      "patch": {
-        "summary": "Update Category"
-      },
-      "delete": {
-        "summary": "Delete Category"
-      }
-    },
-    "/api/product": {
-      "get": {
-        "summary": "List Products",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Product",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/product/{id}": {
-      "get": {
-        "summary": "Get Product"
-      },
-      "patch": {
-        "summary": "Update Product"
-      },
-      "delete": {
-        "summary": "Delete Product"
-      }
-    },
-    "/api/role": {
-      "get": {
-        "summary": "List Roles",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Role",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/role/{id}": {
-      "get": {
-        "summary": "Get Role"
-      },
-      "patch": {
-        "summary": "Update Role"
-      },
-      "delete": {
-        "summary": "Delete Role"
-      }
-    },
-    "/api/order": {
-      "get": {
-        "summary": "List Orders",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Order",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/order/{id}": {
-      "get": {
-        "summary": "Get Order"
-      },
-      "patch": {
-        "summary": "Update Order"
-      },
-      "delete": {
-        "summary": "Delete Order"
-      }
-    },
-    "/api/orderitem": {
-      "get": {
-        "summary": "List Order Items",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Order Item",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/orderitem/{id}": {
-      "get": {
-        "summary": "Get Order Item"
-      },
-      "patch": {
-        "summary": "Update Order Item"
-      },
-      "delete": {
-        "summary": "Delete Order Item"
-      }
-    },
-    "/api/media": {
-      "get": {
-        "summary": "List Media",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Media",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/media/{id}": {
-      "get": {
-        "summary": "Get Media"
-      },
-      "patch": {
-        "summary": "Update Media"
-      },
-      "delete": {
-        "summary": "Delete Media"
-      }
-    },
-    "/api/review": {
-      "get": {
-        "summary": "List Reviews",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Review",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/review/{id}": {
-      "get": {
-        "summary": "Get Review"
-      },
-      "patch": {
-        "summary": "Update Review"
-      },
-      "delete": {
-        "summary": "Delete Review"
       }
     },
     "/api/cart": {
@@ -382,9 +179,9 @@
         "summary": "Delete Cart Item"
       }
     },
-    "/api/coupon": {
+    "/api/category": {
       "get": {
-        "summary": "List Coupons",
+        "summary": "List Categories",
         "responses": {
           "200": {
             "description": "ok"
@@ -392,7 +189,7 @@
         }
       },
       "post": {
-        "summary": "Create Coupon",
+        "summary": "Create Category",
         "responses": {
           "201": {
             "description": "created"
@@ -400,44 +197,15 @@
         }
       }
     },
-    "/api/coupon/{id}": {
+    "/api/category/{id}": {
       "get": {
-        "summary": "Get Coupon"
+        "summary": "Get Category"
       },
       "patch": {
-        "summary": "Update Coupon"
+        "summary": "Update Category"
       },
       "delete": {
-        "summary": "Delete Coupon"
-      }
-    },
-    "/api/subscription": {
-      "get": {
-        "summary": "List Subscriptions",
-        "responses": {
-          "200": {
-            "description": "ok"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Subscription",
-        "responses": {
-          "201": {
-            "description": "created"
-          }
-        }
-      }
-    },
-    "/api/subscription/{id}": {
-      "get": {
-        "summary": "Get Subscription"
-      },
-      "patch": {
-        "summary": "Update Subscription"
-      },
-      "delete": {
-        "summary": "Delete Subscription"
+        "summary": "Delete Category"
       }
     },
     "/api/contact": {
@@ -469,6 +237,267 @@
         "summary": "Delete Contact"
       }
     },
+    "/api/coupon": {
+      "get": {
+        "summary": "List Coupons",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Coupon",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/coupon/{id}": {
+      "get": {
+        "summary": "Get Coupon"
+      },
+      "patch": {
+        "summary": "Update Coupon"
+      },
+      "delete": {
+        "summary": "Delete Coupon"
+      }
+    },
+    "/api/currentaffairs": {
+      "get": {
+        "summary": "List Current Affairs",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Current Affair",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/currentaffairs/{id}": {
+      "get": {
+        "summary": "Get Current Affair"
+      },
+      "patch": {
+        "summary": "Update Current Affair"
+      },
+      "delete": {
+        "summary": "Delete Current Affair"
+      }
+    },
+    "/api/domain": {
+      "get": {
+        "summary": "List Domains",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Domain",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/domain/{id}": {
+      "get": {
+        "summary": "Get Domain"
+      },
+      "patch": {
+        "summary": "Update Domain"
+      },
+      "delete": {
+        "summary": "Delete Domain"
+      }
+    },
+    "/api/event": {
+      "get": {
+        "summary": "List Events",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Event",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/event/{id}": {
+      "get": {
+        "summary": "Get Event"
+      },
+      "patch": {
+        "summary": "Update Event"
+      },
+      "delete": {
+        "summary": "Delete Event"
+      }
+    },
+    "/api/exam": {
+      "get": {
+        "summary": "List Exams",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Exam",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/exam/{id}": {
+      "get": {
+        "summary": "Get Exam"
+      },
+      "patch": {
+        "summary": "Update Exam"
+      },
+      "delete": {
+        "summary": "Delete Exam"
+      }
+    },
+    "/api/invoice": {
+      "get": {
+        "summary": "List Invoices",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Invoice",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/invoice/{id}": {
+      "get": {
+        "summary": "Get Invoice"
+      },
+      "patch": {
+        "summary": "Update Invoice"
+      },
+      "delete": {
+        "summary": "Delete Invoice"
+      }
+    },
+    "/api/lead": {
+      "get": {
+        "summary": "List Leads",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Lead",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/lead/{id}": {
+      "get": {
+        "summary": "Get Lead"
+      },
+      "patch": {
+        "summary": "Update Lead"
+      },
+      "delete": {
+        "summary": "Delete Lead"
+      }
+    },
+    "/api/liveclass": {
+      "get": {
+        "summary": "List Live Classes",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Live Class",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/liveclass/{id}": {
+      "get": {
+        "summary": "Get Live Class"
+      },
+      "patch": {
+        "summary": "Update Live Class"
+      },
+      "delete": {
+        "summary": "Delete Live Class"
+      }
+    },
+    "/api/media": {
+      "get": {
+        "summary": "List Media",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Media",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/media/{id}": {
+      "get": {
+        "summary": "Get Media"
+      },
+      "patch": {
+        "summary": "Update Media"
+      },
+      "delete": {
+        "summary": "Delete Media"
+      }
+    },
     "/api/mediavariant": {
       "get": {
         "summary": "List Media Variants",
@@ -496,6 +525,499 @@
       },
       "delete": {
         "summary": "Delete Media Variant"
+      }
+    },
+    "/api/module": {
+      "get": {
+        "summary": "List Modules",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Module",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/module/{id}": {
+      "get": {
+        "summary": "Get Module"
+      },
+      "patch": {
+        "summary": "Update Module"
+      },
+      "delete": {
+        "summary": "Delete Module"
+      }
+    },
+    "/api/note": {
+      "get": {
+        "summary": "List Notes",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Note",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/note/{id}": {
+      "get": {
+        "summary": "Get Note"
+      },
+      "patch": {
+        "summary": "Update Note"
+      },
+      "delete": {
+        "summary": "Delete Note"
+      }
+    },
+    "/api/notice": {
+      "get": {
+        "summary": "List Notices",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Notice",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/notice/{id}": {
+      "get": {
+        "summary": "Get Notice"
+      },
+      "patch": {
+        "summary": "Update Notice"
+      },
+      "delete": {
+        "summary": "Delete Notice"
+      }
+    },
+    "/api/order": {
+      "get": {
+        "summary": "List Orders",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Order",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/order/{id}": {
+      "get": {
+        "summary": "Get Order"
+      },
+      "patch": {
+        "summary": "Update Order"
+      },
+      "delete": {
+        "summary": "Delete Order"
+      }
+    },
+    "/api/orderitem": {
+      "get": {
+        "summary": "List Order Items",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Order Item",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/orderitem/{id}": {
+      "get": {
+        "summary": "Get Order Item"
+      },
+      "patch": {
+        "summary": "Update Order Item"
+      },
+      "delete": {
+        "summary": "Delete Order Item"
+      }
+    },
+    "/api/product": {
+      "get": {
+        "summary": "List Products",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Product",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/product/{id}": {
+      "get": {
+        "summary": "Get Product"
+      },
+      "patch": {
+        "summary": "Update Product"
+      },
+      "delete": {
+        "summary": "Delete Product"
+      }
+    },
+    "/api/project_note": {
+      "get": {
+        "summary": "List Project Notes",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Project Note",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/project_note/{id}": {
+      "get": {
+        "summary": "Get Project Note"
+      },
+      "patch": {
+        "summary": "Update Project Note"
+      },
+      "delete": {
+        "summary": "Delete Project Note"
+      }
+    },
+    "/api/publisherprofile": {
+      "get": {
+        "summary": "List Publishers",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Publisher",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/publisherprofile/{id}": {
+      "get": {
+        "summary": "Get Publisher"
+      },
+      "patch": {
+        "summary": "Update Publisher"
+      },
+      "delete": {
+        "summary": "Delete Publisher"
+      }
+    },
+    "/api/publishertoken": {
+      "get": {
+        "summary": "List Publisher Tokens",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Publisher Token",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/publishertoken/{id}": {
+      "get": {
+        "summary": "Get Publisher Token"
+      },
+      "patch": {
+        "summary": "Update Publisher Token"
+      },
+      "delete": {
+        "summary": "Delete Publisher Token"
+      }
+    },
+    "/api/qa_check": {
+      "get": {
+        "summary": "List QA Checks",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create QA Check",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/qa_check/{id}": {
+      "get": {
+        "summary": "Get QA Check"
+      },
+      "patch": {
+        "summary": "Update QA Check"
+      },
+      "delete": {
+        "summary": "Delete QA Check"
+      }
+    },
+    "/api/quiz": {
+      "get": {
+        "summary": "List Questions",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Question",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/quiz/{id}": {
+      "get": {
+        "summary": "Get Question"
+      },
+      "patch": {
+        "summary": "Update Question"
+      },
+      "delete": {
+        "summary": "Delete Question"
+      }
+    },
+    "/api/quizcomment": {
+      "get": {
+        "summary": "List Quiz Comments",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Quiz Comment",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/quizcomment/{id}": {
+      "get": {
+        "summary": "Get Quiz Comment"
+      },
+      "patch": {
+        "summary": "Update Quiz Comment"
+      },
+      "delete": {
+        "summary": "Delete Quiz Comment"
+      }
+    },
+    "/api/quizset": {
+      "get": {
+        "summary": "List Quiz Sets",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Quiz Set",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/quizset/{id}": {
+      "get": {
+        "summary": "Get Quiz Set"
+      },
+      "patch": {
+        "summary": "Update Quiz Set"
+      },
+      "delete": {
+        "summary": "Delete Quiz Set"
+      }
+    },
+    "/api/raiseproblem": {
+      "get": {
+        "summary": "List Reported Problems",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Reported Problem",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/raiseproblem/{id}": {
+      "get": {
+        "summary": "Get Reported Problem"
+      },
+      "patch": {
+        "summary": "Update Reported Problem"
+      },
+      "delete": {
+        "summary": "Delete Reported Problem"
+      }
+    },
+    "/api/review": {
+      "get": {
+        "summary": "List Reviews",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Review",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/review/{id}": {
+      "get": {
+        "summary": "Get Review"
+      },
+      "patch": {
+        "summary": "Update Review"
+      },
+      "delete": {
+        "summary": "Delete Review"
+      }
+    },
+    "/api/review_item": {
+      "get": {
+        "summary": "List Review Items",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Review Item",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/review_item/{id}": {
+      "get": {
+        "summary": "Get Review Item"
+      },
+      "patch": {
+        "summary": "Update Review Item"
+      },
+      "delete": {
+        "summary": "Delete Review Item"
+      }
+    },
+    "/api/role": {
+      "get": {
+        "summary": "List Roles",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Role",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/role/{id}": {
+      "get": {
+        "summary": "Get Role"
+      },
+      "patch": {
+        "summary": "Update Role"
+      },
+      "delete": {
+        "summary": "Delete Role"
       }
     },
     "/api/setting": {
@@ -526,11 +1048,347 @@
       "delete": {
         "summary": "Delete Setting"
       }
+    },
+    "/api/staff": {
+      "get": {
+        "summary": "List Staff",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Staff",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/staff/{id}": {
+      "get": {
+        "summary": "Get Staff"
+      },
+      "patch": {
+        "summary": "Update Staff"
+      },
+      "delete": {
+        "summary": "Delete Staff"
+      }
+    },
+    "/api/subscriber": {
+      "get": {
+        "summary": "List Subscribers",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Subscriber",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/subscriber/{id}": {
+      "get": {
+        "summary": "Get Subscriber"
+      },
+      "patch": {
+        "summary": "Update Subscriber"
+      },
+      "delete": {
+        "summary": "Delete Subscriber"
+      }
+    },
+    "/api/subscription": {
+      "get": {
+        "summary": "List Subscriptions",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Subscription",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/subscription/{id}": {
+      "get": {
+        "summary": "Get Subscription"
+      },
+      "patch": {
+        "summary": "Update Subscription"
+      },
+      "delete": {
+        "summary": "Delete Subscription"
+      }
+    },
+    "/api/successstory": {
+      "get": {
+        "summary": "List Success Stories",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Success Story",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/successstory/{id}": {
+      "get": {
+        "summary": "Get Success Story"
+      },
+      "patch": {
+        "summary": "Update Success Story"
+      },
+      "delete": {
+        "summary": "Delete Success Story"
+      }
+    },
+    "/api/task_item": {
+      "get": {
+        "summary": "List Tasks",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Task",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/task_item/{id}": {
+      "get": {
+        "summary": "Get Task"
+      },
+      "patch": {
+        "summary": "Update Task"
+      },
+      "delete": {
+        "summary": "Delete Task"
+      }
+    },
+    "/api/tenant": {
+      "get": {
+        "summary": "List Tenants",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Tenant",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/tenant/{id}": {
+      "get": {
+        "summary": "Get Tenant"
+      },
+      "patch": {
+        "summary": "Update Tenant"
+      },
+      "delete": {
+        "summary": "Delete Tenant"
+      }
+    },
+    "/api/ticket": {
+      "get": {
+        "summary": "List Tickets",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Ticket",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/ticket/{id}": {
+      "get": {
+        "summary": "Get Ticket"
+      },
+      "patch": {
+        "summary": "Update Ticket"
+      },
+      "delete": {
+        "summary": "Delete Ticket"
+      }
+    },
+    "/api/ticket_log": {
+      "get": {
+        "summary": "List Ticket Logs",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Ticket Log",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/ticket_log/{id}": {
+      "get": {
+        "summary": "Get Ticket Log"
+      },
+      "patch": {
+        "summary": "Update Ticket Log"
+      },
+      "delete": {
+        "summary": "Delete Ticket Log"
+      }
+    },
+    "/api/topic": {
+      "get": {
+        "summary": "List Topics",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Topic",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/topic/{id}": {
+      "get": {
+        "summary": "Get Topic"
+      },
+      "patch": {
+        "summary": "Update Topic"
+      },
+      "delete": {
+        "summary": "Delete Topic"
+      }
+    },
+    "/api/user": {
+      "get": {
+        "summary": "List Users",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create User",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/user/{id}": {
+      "get": {
+        "summary": "Get User"
+      },
+      "patch": {
+        "summary": "Update User"
+      },
+      "delete": {
+        "summary": "Delete User"
+      }
+    },
+    "/api/videolist": {
+      "get": {
+        "summary": "List Videos",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Video",
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/api/videolist/{id}": {
+      "get": {
+        "summary": "Get Video"
+      },
+      "patch": {
+        "summary": "Update Video"
+      },
+      "delete": {
+        "summary": "Delete Video"
+      }
     }
   },
   "components": {
     "schemas": {
-      "Tenant": {
+      "Askquestion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Blogcategory": {
         "type": "object",
         "properties": {
           "id": {
@@ -539,60 +1397,43 @@
           "name": {
             "type": "string"
           },
-          "domain": {
+          "slug": {
             "type": "string"
           },
-          "settings": {
+          "image": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
             "type": "string"
           }
         }
       },
-      "User": {
+      "Blogcomment": {
         "type": "object",
         "properties": {
           "id": {
+            "type": "string"
+          },
+          "name": {
             "type": "string"
           },
           "email": {
             "type": "string"
           },
-          "name": {
+          "comment": {
             "type": "string"
           },
-          "role": {
+          "postId": {
             "type": "string"
           },
-          "roles": {
-            "type": "string"
-          },
-          "permissions": {
+          "authorId": {
             "type": "string"
           },
           "status": {
             "type": "string"
-          }
-        }
-      },
-      "Topic": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "parentId": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          },
-          "sortOrder": {
-            "type": "number"
           }
         }
       },
@@ -622,6 +1463,43 @@
           }
         }
       },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Cartitem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "cartId": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "qty": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      },
       "Category": {
         "type": "object",
         "properties": {
@@ -645,7 +1523,83 @@
           }
         }
       },
-      "Product": {
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Coupon": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "minAmount": {
+            "type": "number"
+          },
+          "maxUses": {
+            "type": "number"
+          },
+          "usedCount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Currentaffairs": {
         "type": "object",
         "properties": {
           "id": {
@@ -654,51 +1608,350 @@
           "title": {
             "type": "string"
           },
-          "slug": {
+          "link": {
             "type": "string"
           },
-          "description": {
+          "date": {
             "type": "string"
-          },
-          "price": {
-            "type": "number"
           },
           "status": {
-            "type": "string"
-          },
-          "categoryId": {
-            "type": "string"
-          },
-          "sku": {
-            "type": "string"
-          },
-          "stock": {
-            "type": "number"
-          },
-          "cover": {
-            "type": "string"
-          },
-          "tags": {
             "type": "string"
           }
         }
       },
-      "Role": {
+      "Domain": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "key": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "scheme": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "processStatus": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           },
           "name": {
             "type": "string"
           },
-          "soms": {
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "uid": {
             "type": "string"
           },
           "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Exam": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "examType": {
+            "type": "string"
+          },
+          "examGroup": {
+            "type": "string"
+          },
+          "seoGroup": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "string"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "uid": {
+            "type": "string"
+          },
+          "affiliateName": {
+            "type": "string"
+          },
+          "payment": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "string"
+          }
+        }
+      },
+      "Lead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          }
+        }
+      },
+      "Liveclass": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "instructor": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "datetime": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "series": {
+            "type": "string"
+          },
+          "session": {
+            "type": "string"
+          },
+          "recordings": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Media": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "path": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "variants": {
+            "type": "string"
+          }
+        }
+      },
+      "Mediavariant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "mediaId": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "path": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Module": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "subscriptionType": {
+            "type": "string"
+          },
+          "resultFormat": {
+            "type": "string"
+          },
+          "newStatus": {
+            "type": "string"
+          }
+        }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "order": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Notice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "subtype": {
+            "type": "string"
+          },
+          "fromid": {
+            "type": "string"
+          },
+          "toid": {
+            "type": "string"
+          },
+          "totype": {
+            "type": "string"
+          },
+          "readtime": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "extra": {
             "type": "string"
           }
         }
@@ -743,7 +1996,65 @@
           }
         }
       },
-      "Media": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "number"
+          },
+          "cover": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          }
+        }
+      },
+      "Project_note": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "number"
+          }
+        }
+      },
+      "Publisherprofile": {
         "type": "object",
         "properties": {
           "id": {
@@ -752,22 +2063,220 @@
           "name": {
             "type": "string"
           },
+          "companyname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "skype": {
+            "type": "string"
+          },
+          "payment": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Publishertoken": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "apps": {
+            "type": "string"
+          },
+          "domains": {
+            "type": "string"
+          },
+          "ips": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Qa_check": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Quiz": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "quesLevel": {
+            "type": "string"
+          },
+          "quesLang": {
+            "type": "string"
+          },
+          "quesType": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "correctAns": {
+            "type": "string"
+          },
+          "solution": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "quesTag": {
+            "type": "string"
+          },
+          "examTag": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "likeCount": {
+            "type": "number"
+          },
+          "extra": {
+            "type": "string"
+          }
+        }
+      },
+      "Quizcomment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "qid": {
+            "type": "string"
+          },
+          "uid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
           "url": {
             "type": "string"
           },
-          "mimeType": {
-            "type": "string"
-          },
-          "size": {
+          "likeCount": {
             "type": "number"
           },
-          "path": {
+          "upvote": {
+            "type": "number"
+          },
+          "downvote": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Quizset": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           },
-          "createdAt": {
+          "name": {
             "type": "string"
           },
-          "variants": {
+          "topicId": {
+            "type": "string"
+          },
+          "topicList": {
+            "type": "string"
+          },
+          "numQuiz": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Raiseproblem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "problem": {
+            "type": "string"
+          },
+          "quizId": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
             "type": "string"
           }
         }
@@ -801,77 +2310,150 @@
           }
         }
       },
-      "Cart": {
+      "Review_item": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "userId": {
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "soms": {
             "type": "string"
           },
           "status": {
             "type": "string"
-          },
-          "createdAt": {
-            "type": "string"
           }
         }
       },
-      "Cartitem": {
+      "Setting": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "cartId": {
-            "type": "string"
-          },
-          "productId": {
-            "type": "string"
-          },
-          "qty": {
-            "type": "number"
-          },
-          "price": {
-            "type": "number"
-          }
-        }
-      },
-      "Coupon": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "type": {
+          "key": {
             "type": "string"
           },
           "value": {
-            "type": "number"
+            "type": "string"
           },
-          "minAmount": {
-            "type": "number"
+          "group": {
+            "type": "string"
           },
-          "maxUses": {
-            "type": "number"
+          "label": {
+            "type": "string"
           },
-          "usedCount": {
-            "type": "number"
+          "updatedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Staff": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "managerName": {
+            "type": "string"
+          },
+          "skype": {
+            "type": "string"
+          },
+          "wechat": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "payment": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Subscriber": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "refid": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
           },
           "status": {
             "type": "string"
           },
-          "startsAt": {
-            "type": "string"
-          },
-          "expiresAt": {
+          "extra": {
             "type": "string"
           }
         }
@@ -911,92 +2493,207 @@
           }
         }
       },
-      "Contact": {
+      "Successstory": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "ownerId": {
+          "name": {
             "type": "string"
           },
-          "firstName": {
+          "author": {
             "type": "string"
           },
-          "lastName": {
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Task_item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "Tenant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "string"
+          }
+        }
+      },
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "uid": {
+            "type": "string"
+          },
+          "uploads": {
+            "type": "string"
+          },
+          "affiliateName": {
+            "type": "string"
+          }
+        }
+      },
+      "Ticket_log": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        }
+      },
+      "Topic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           },
           "email": {
             "type": "string"
           },
-          "phone": {
+          "name": {
             "type": "string"
           },
-          "company": {
+          "role": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "Videolist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "vid": {
+            "type": "string"
+          },
+          "ytVid": {
+            "type": "string"
+          },
+          "hlsVid": {
+            "type": "string"
+          },
+          "mirrors": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "ecomPlan": {
             "type": "string"
           },
           "tags": {
             "type": "string"
           },
           "status": {
-            "type": "string"
-          },
-          "notes": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string"
-          }
-        }
-      },
-      "Mediavariant": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "mediaId": {
-            "type": "string"
-          },
-          "format": {
-            "type": "string"
-          },
-          "width": {
-            "type": "number"
-          },
-          "height": {
-            "type": "number"
-          },
-          "path": {
-            "type": "string"
-          },
-          "size": {
-            "type": "number"
-          },
-          "createdAt": {
-            "type": "string"
-          }
-        }
-      },
-      "Setting": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "key": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          },
-          "group": {
-            "type": "string"
-          },
-          "label": {
-            "type": "string"
-          },
-          "updatedAt": {
             "type": "string"
           }
         }

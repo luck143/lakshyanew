@@ -1,0 +1,293 @@
+{
+  "labelPlural": "Questions",
+  "versioned": false,
+  "name": "quiz",
+  "table": "Quiz",
+  "label": "Question",
+  "group": "LMS",
+  "icon": "help",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "topicId": {
+      "type": "relation",
+      "label": "Topic",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "quesLevel": {
+      "type": "enum",
+      "label": "Level",
+      "options": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "quesLang": {
+      "type": "enum",
+      "label": "Language",
+      "options": {
+        "english": "English",
+        "hindi": "Hindi"
+      },
+      "default": "english",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "quesType": {
+      "type": "enum",
+      "label": "Type",
+      "options": {
+        "mcq": "MCQ",
+        "single_answer": "Single Answer",
+        "one_direction": "One Direction",
+        "multiple_correct": "Multiple Correct",
+        "paper": "Question Paper"
+      },
+      "default": "mcq",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "question": {
+      "type": "richtext",
+      "label": "Question",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "searchable": true
+      }
+    },
+    "answer": {
+      "type": "json",
+      "label": "Answer Options",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "correctAns": {
+      "type": "string",
+      "label": "Correct Option",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "solution": {
+      "type": "richtext",
+      "label": "Solution",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "marks": {
+      "type": "int",
+      "label": "Marks",
+      "default": 1,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "quesTag": {
+      "type": "tags",
+      "label": "Question Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "examTag": {
+      "type": "tags",
+      "label": "Exam Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "pending": "Pending",
+        "inactive": "Inactive",
+        "hidden": "Hidden"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "likeCount": {
+      "type": "int",
+      "label": "Likes",
+      "default": 0,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "extra": {
+      "type": "json",
+      "label": "Extra",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "question",
+      "topicId",
+      "quesLevel",
+      "quesType",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "topicId",
+    "quesLevel",
+    "quesType",
+    "status"
+  ]
+}

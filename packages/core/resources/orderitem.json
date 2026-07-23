@@ -1,0 +1,120 @@
+{
+  "labelPlural": "Order Items",
+  "versioned": false,
+  "name": "orderitem",
+  "table": "OrderItem",
+  "label": "Order Item",
+  "group": "E-commerce",
+  "icon": "list",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "orderId": {
+      "type": "relation",
+      "label": "Order",
+      "options": {
+        "resource": "order",
+        "labelField": "id"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "productId": {
+      "type": "relation",
+      "label": "Product",
+      "options": {
+        "resource": "product",
+        "labelField": "title"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "qty": {
+      "type": "int",
+      "label": "Qty",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "price": {
+      "type": "float",
+      "label": "Unit Price",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "orderId",
+      "productId",
+      "qty",
+      "price"
+    ],
+    "defaultSort": "orderId",
+    "pageSize": 50
+  },
+  "filters": [
+    "orderId",
+    "productId"
+  ]
+}

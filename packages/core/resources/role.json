@@ -1,0 +1,107 @@
+{
+  "labelPlural": "Roles",
+  "versioned": false,
+  "name": "role",
+  "table": "Role",
+  "label": "Role",
+  "group": "Access Control",
+  "icon": "shield",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "label": "Key",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      }
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "soms": {
+      "type": "json",
+      "label": "Permissions (SOM)",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "key",
+      "status"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "status"
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "labelPlural": "Categories",
+  "versioned": false,
+  "name": "category",
+  "table": "Category",
+  "label": "Category",
+  "group": "E-commerce",
+  "icon": "folder",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1,
+        "max": 200
+      },
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "sortable": true,
+        "filterable": true,
+        "searchable": true
+      }
+    },
+    "slug": {
+      "type": "string",
+      "label": "Slug",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "parentId": {
+      "type": "relation",
+      "label": "Parent",
+      "options": {
+        "resource": "category",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "sortOrder": {
+      "type": "int",
+      "label": "Sort Order",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "status",
+      "sortOrder"
+    ],
+    "defaultSort": "sortOrder",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "parentId"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "slug",
+    "detail": true
+  }
+}

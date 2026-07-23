@@ -1,0 +1,164 @@
+{
+  "labelPlural": "Blog Posts",
+  "versioned": false,
+  "name": "blogpost",
+  "table": "BlogPost",
+  "label": "Blog Post",
+  "group": "Content",
+  "icon": "doc",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1,
+        "max": 300
+      },
+      "ui": {
+        "columns": true,
+        "sortable": true,
+        "filterable": true,
+        "searchable": true
+      }
+    },
+    "slug": {
+      "type": "string",
+      "label": "Slug",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "body": {
+      "type": "richtext",
+      "label": "Body",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "default": "draft",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "authorId": {
+      "type": "relation",
+      "label": "Author",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "status",
+      "slug"
+    ],
+    "defaultSort": "title",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "tags"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "slug",
+    "detail": true,
+    "publicStatus": "published"
+  }
+}

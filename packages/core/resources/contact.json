@@ -1,0 +1,214 @@
+{
+  "labelPlural": "Contacts",
+  "versioned": false,
+  "name": "contact",
+  "table": "Contact",
+  "label": "Contact",
+  "group": "CRM",
+  "icon": "users",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "ownerId": {
+      "type": "relation",
+      "label": "Owner",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "firstName": {
+      "type": "string",
+      "label": "First Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "lastName": {
+      "type": "string",
+      "label": "Last Name",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "email": {
+      "type": "string",
+      "label": "Email",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "phone": {
+      "type": "string",
+      "label": "Phone",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "company": {
+      "type": "string",
+      "label": "Company",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "lead": "Lead",
+        "prospect": "Prospect",
+        "customer": "Customer",
+        "churned": "Churned"
+      },
+      "default": "lead",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "notes": {
+      "type": "text",
+      "label": "Notes",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "createdAt": {
+      "type": "datetime",
+      "label": "Created",
+      "visible": [
+        "list"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "firstName",
+      "lastName",
+      "company",
+      "email",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "ownerId",
+    "company"
+  ]
+}

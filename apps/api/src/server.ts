@@ -32,7 +32,11 @@ import {
   checkoutGuestCart,
 } from './guestCart.js';
 import { authorizePayment } from './payments.js';
-import './resources.js'; // registers resources
+// Resource definitions are loaded from JSON files (packages/core/resources/*.json)
+// via the @lakshya/core loader — the single source of truth. No hand-written
+// resources.ts.
+import { loadResourceFiles } from '@lakshya/core';
+loadResourceFiles();
 import { loadBuilderResources, listBuilderResources, getBuilderResource, createBuilderResource, deleteBuilderResource, dropBuilderTable } from './builder-store.js';
 
 const app = Fastify({ logger: false });
@@ -112,10 +116,11 @@ function scopeFor(role: ScopeRole | undefined): ScopeRole {
 }
 
 // ---- Generic CRUD routes ----
-// Boot: load any Resource-Builder definitions from the DB into the
+// Boot: load any Resource-Builder definitions from JSON files
+// (packages/core/resources/*.json — the single source of truth) into the
 // registry so they are live immediately (no restart, no Prisma regen).
 loadBuilderResources()
-  .then((n) => { if (n) console.log(`[builder] loaded ${n} resource(s) from store`); })
+  .then((n) => { if (n) console.log(`[builder] loaded ${n} resource definition(s) from JSON`); })
   .catch((e) => console.warn('[builder] boot load failed:', e?.message));
 
 const crudOps = ['list', 'get', 'create', 'update', 'delete'] as const;

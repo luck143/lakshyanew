@@ -1,0 +1,179 @@
+{
+  "labelPlural": "Domains",
+  "versioned": false,
+  "name": "domain",
+  "table": "Domain",
+  "label": "Domain",
+  "group": "Network",
+  "icon": "globe",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "type": {
+      "type": "enum",
+      "label": "Type",
+      "options": {
+        "primary": "Primary",
+        "parked": "Parked",
+        "redirect": "Redirect"
+      },
+      "default": "primary",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "scheme": {
+      "type": "enum",
+      "label": "Scheme",
+      "options": {
+        "http": "HTTP",
+        "https": "HTTPS"
+      },
+      "default": "https",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "processStatus": {
+      "type": "enum",
+      "label": "Process",
+      "options": {
+        "live": "Live",
+        "pending": "Pending",
+        "suspended": "Suspended"
+      },
+      "default": "live",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "hidden": {
+      "type": "bool",
+      "label": "Hidden",
+      "default": false,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "comment": {
+      "type": "text",
+      "label": "Comment",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "type",
+      "status",
+      "processStatus"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "type"
+  ]
+}

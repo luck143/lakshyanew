@@ -1,0 +1,126 @@
+{
+  "labelPlural": "Cart Items",
+  "versioned": false,
+  "name": "cartitem",
+  "table": "CartItem",
+  "label": "Cart Item",
+  "group": "E-commerce",
+  "icon": "list",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "cartId": {
+      "type": "relation",
+      "label": "Cart",
+      "options": {
+        "resource": "cart",
+        "labelField": "id"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "productId": {
+      "type": "relation",
+      "label": "Product",
+      "options": {
+        "resource": "product",
+        "labelField": "title"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "qty": {
+      "type": "int",
+      "label": "Qty",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "price": {
+      "type": "float",
+      "label": "Unit Price",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "cartId",
+      "productId",
+      "qty",
+      "price"
+    ],
+    "defaultSort": "productId",
+    "pageSize": 50
+  },
+  "filters": [
+    "cartId",
+    "productId"
+  ]
+}

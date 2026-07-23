@@ -1,0 +1,233 @@
+{
+  "labelPlural": "Invoices",
+  "versioned": false,
+  "name": "invoice",
+  "table": "Invoice",
+  "label": "Invoice",
+  "group": "Network",
+  "icon": "receipt",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "amount": {
+      "type": "float",
+      "label": "Amount",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "date": {
+      "type": "date",
+      "label": "Date",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "period": {
+      "type": "string",
+      "label": "Period",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "type": {
+      "type": "enum",
+      "label": "Type",
+      "options": {
+        "subscription": "Subscription",
+        "commission": "Commission",
+        "refund": "Refund",
+        "other": "Other"
+      },
+      "default": "subscription",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "cancelled": "Cancelled",
+        "overdue": "Overdue"
+      },
+      "default": "pending",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "uid": {
+      "type": "relation",
+      "label": "User",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "affiliateName": {
+      "type": "string",
+      "label": "Affiliate",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "payment": {
+      "type": "json",
+      "label": "Payment",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "message": {
+      "type": "text",
+      "label": "Message",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "extra": {
+      "type": "json",
+      "label": "Extra",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "amount",
+      "status",
+      "date"
+    ],
+    "defaultSort": "date",
+    "pageSize": 50
+  },
+  "filters": [
+    "status",
+    "type",
+    "uid"
+  ]
+}

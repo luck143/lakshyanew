@@ -6,4 +6,5 @@ export * from './builder.js';
 export * from './validation.js';
 export * from './nav.js';
 export * from './permissions.js';
+export * from './loader.js';
 

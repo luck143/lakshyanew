@@ -1,0 +1,33 @@
+{
+  "name": "qa_check",
+  "table": "QaCheck",
+  "label": "QA Check",
+  "labelPlural": "QA Checks",
+  "group": "Builder",
+  "icon": "◈",
+  "fields": {
+    "name": {
+      "type": "string",
+      "label": "Name"
+    },
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name"
+    ]
+  }
+}

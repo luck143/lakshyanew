@@ -1,0 +1,127 @@
+{
+  "labelPlural": "Media",
+  "versioned": false,
+  "name": "media",
+  "table": "Media",
+  "label": "Media",
+  "group": "Media",
+  "icon": "image",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create",
+        "update"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "url": {
+      "type": "media",
+      "label": "File",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "mimeType": {
+      "type": "string",
+      "label": "MIME",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "size": {
+      "type": "int",
+      "label": "Size",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "label": "Path",
+      "visible": [
+        "get"
+      ]
+    },
+    "createdAt": {
+      "type": "datetime",
+      "label": "Created",
+      "visible": [
+        "list"
+      ]
+    },
+    "variants": {
+      "type": "relation",
+      "label": "Variants",
+      "options": {
+        "resource": "mediavariant",
+        "labelField": "format"
+      },
+      "visible": [
+        "get"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "mimeType",
+      "size",
+      "createdAt"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "mimeType"
+  ]
+}

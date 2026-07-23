@@ -1,0 +1,193 @@
+{
+  "labelPlural": "Quiz Comments",
+  "versioned": false,
+  "name": "quizcomment",
+  "table": "QuizComment",
+  "label": "Quiz Comment",
+  "group": "LMS",
+  "icon": "comment",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "qid": {
+      "type": "relation",
+      "label": "Question",
+      "options": {
+        "resource": "quiz",
+        "labelField": "question"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "uid": {
+      "type": "relation",
+      "label": "User",
+      "options": {
+        "resource": "user",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "label": "Email",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "comment": {
+      "type": "text",
+      "label": "Comment",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "url": {
+      "type": "url",
+      "label": "URL",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "likeCount": {
+      "type": "int",
+      "label": "Likes",
+      "default": 0,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "upvote": {
+      "type": "int",
+      "label": "Upvotes",
+      "default": 0,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "downvote": {
+      "type": "int",
+      "label": "Downvotes",
+      "default": 0,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "pending": "Pending",
+        "hidden": "Hidden",
+        "spam": "Spam"
+      },
+      "default": "pending",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "qid",
+      "name",
+      "likeCount",
+      "status"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "qid",
+    "status"
+  ]
+}

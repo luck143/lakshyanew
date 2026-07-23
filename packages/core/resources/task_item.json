@@ -1,0 +1,46 @@
+{
+  "icon": "◈",
+  "name": "task_item",
+  "group": "Builder",
+  "label": "Task",
+  "table": "TaskItem",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "visible": [
+        "list",
+        "get"
+      ],
+      "generated": true
+    },
+    "done": {
+      "type": "bool",
+      "label": "Done"
+    },
+    "notes": {
+      "type": "text",
+      "label": "Notes"
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "done"
+    ]
+  },
+  "labelPlural": "Tasks"
+}

@@ -1,0 +1,120 @@
+{
+  "labelPlural": "Settings",
+  "versioned": false,
+  "name": "setting",
+  "table": "Setting",
+  "label": "Setting",
+  "group": "Settings",
+  "icon": "cog",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "label": "Key",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "value": {
+      "type": "json",
+      "label": "Value",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "group": {
+      "type": "string",
+      "label": "Group",
+      "default": "general",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "label": {
+      "type": "string",
+      "label": "Label",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "updatedAt": {
+      "type": "datetime",
+      "label": "Updated",
+      "visible": [
+        "list"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "key",
+      "group",
+      "label",
+      "updatedAt"
+    ],
+    "defaultSort": "key",
+    "pageSize": 50
+  },
+  "filters": [
+    "group",
+    "key"
+  ]
+}

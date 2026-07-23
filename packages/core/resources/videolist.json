@@ -1,0 +1,245 @@
+{
+  "labelPlural": "Videos",
+  "versioned": false,
+  "name": "videolist",
+  "table": "VideoList",
+  "label": "Video",
+  "group": "LMS",
+  "icon": "play",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "topicId": {
+      "type": "relation",
+      "label": "Topic",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "vid": {
+      "type": "string",
+      "label": "Internal VID",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "ytVid": {
+      "type": "string",
+      "label": "YouTube ID",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "hlsVid": {
+      "type": "string",
+      "label": "HLS ID",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "mirrors": {
+      "type": "json",
+      "label": "Mirror URLs",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "content": {
+      "type": "richtext",
+      "label": "Description",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "priority": {
+      "type": "int",
+      "label": "Priority",
+      "default": 0,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "length": {
+      "type": "int",
+      "label": "Length (s)",
+      "default": 0,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "ecomPlan": {
+      "type": "json",
+      "label": "E-com Plan",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "tags": {
+      "type": "tags",
+      "label": "Tags",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "draft": "Draft"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "topicId",
+      "priority",
+      "status"
+    ],
+    "defaultSort": "priority",
+    "pageSize": 50
+  },
+  "filters": [
+    "topicId",
+    "status"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "title",
+    "detail": true
+  }
+}

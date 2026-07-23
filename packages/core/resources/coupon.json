@@ -1,0 +1,209 @@
+{
+  "labelPlural": "Coupons",
+  "versioned": false,
+  "name": "coupon",
+  "table": "Coupon",
+  "label": "Coupon",
+  "group": "E-commerce",
+  "icon": "tag",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "label": "Code",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "description": {
+      "type": "string",
+      "label": "Description",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "type": {
+      "type": "enum",
+      "label": "Type",
+      "options": {
+        "percent": "Percent",
+        "fixed": "Fixed"
+      },
+      "default": "percent",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "value": {
+      "type": "float",
+      "label": "Value",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "minAmount": {
+      "type": "float",
+      "label": "Min Amount",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "maxUses": {
+      "type": "int",
+      "label": "Max Uses",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "usedCount": {
+      "type": "int",
+      "label": "Used",
+      "visible": [
+        "list",
+        "get"
+      ],
+      "ui": {
+        "columns": true
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "expired": "Expired"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "startsAt": {
+      "type": "datetime",
+      "label": "Starts At",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "label": "Expires At",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "code",
+      "type",
+      "value",
+      "status",
+      "usedCount"
+    ],
+    "defaultSort": "code",
+    "pageSize": 50
+  },
+  "filters": [
+    "type",
+    "status"
+  ]
+}

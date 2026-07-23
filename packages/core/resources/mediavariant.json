@@ -1,0 +1,127 @@
+{
+  "labelPlural": "Media Variants",
+  "versioned": false,
+  "name": "mediavariant",
+  "table": "MediaVariant",
+  "label": "Media Variant",
+  "group": "Media",
+  "icon": "layers",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "mediaId": {
+      "type": "relation",
+      "label": "Media",
+      "options": {
+        "resource": "media",
+        "labelField": "name"
+      },
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "format": {
+      "type": "string",
+      "label": "Format",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "width": {
+      "type": "int",
+      "label": "Width",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "height": {
+      "type": "int",
+      "label": "Height",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "label": "Path",
+      "visible": [
+        "get",
+        "list",
+        "create",
+        "update"
+      ]
+    },
+    "size": {
+      "type": "int",
+      "label": "Size",
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "createdAt": {
+      "type": "datetime",
+      "label": "Created",
+      "visible": [
+        "list"
+      ]
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "mediaId",
+      "format",
+      "width",
+      "height",
+      "size"
+    ],
+    "defaultSort": "createdAt",
+    "pageSize": 50
+  },
+  "filters": [
+    "mediaId",
+    "format"
+  ]
+}

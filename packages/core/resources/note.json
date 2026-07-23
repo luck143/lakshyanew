@@ -1,0 +1,140 @@
+{
+  "labelPlural": "Notes",
+  "versioned": false,
+  "name": "note",
+  "table": "Note",
+  "label": "Note",
+  "group": "LMS",
+  "icon": "file",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "topicId": {
+      "type": "relation",
+      "label": "Topic",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "body": {
+      "type": "richtext",
+      "label": "Body",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "order": {
+      "type": "int",
+      "label": "Order",
+      "default": 0,
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "draft": "Draft"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "topicId",
+      "order",
+      "status"
+    ],
+    "defaultSort": "order",
+    "pageSize": 50
+  },
+  "filters": [
+    "topicId",
+    "status"
+  ]
+}

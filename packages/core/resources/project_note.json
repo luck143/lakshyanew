@@ -1,0 +1,56 @@
+{
+  "icon": "◈",
+  "name": "project_note",
+  "group": "Builder",
+  "label": "Project Note",
+  "table": "ProjectNote",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "visible": [
+        "list",
+        "get"
+      ],
+      "generated": true
+    },
+    "body": {
+      "type": "text",
+      "label": "Body"
+    },
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "required": [
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": [
+        "draft",
+        "published",
+        "archived"
+      ]
+    },
+    "priority": {
+      "type": "int",
+      "label": "Priority"
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    }
+  },
+  "listView": {
+    "columns": [
+      "title",
+      "status",
+      "priority"
+    ]
+  },
+  "labelPlural": "Project Notes"
+}

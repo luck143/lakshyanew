@@ -1,0 +1,153 @@
+{
+  "labelPlural": "Quiz Sets",
+  "versioned": false,
+  "name": "quizset",
+  "table": "QuizSet",
+  "label": "Quiz Set",
+  "group": "LMS",
+  "icon": "layers",
+  "fields": {
+    "id": {
+      "type": "uuid",
+      "label": "ID",
+      "generated": true,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "label": "Name",
+      "required": [
+        "create"
+      ],
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "validate": {
+        "min": 1
+      },
+      "unique": true,
+      "ui": {
+        "columns": true,
+        "searchable": true
+      }
+    },
+    "topicId": {
+      "type": "relation",
+      "label": "Primary Topic",
+      "options": {
+        "resource": "topic",
+        "labelField": "name"
+      },
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    },
+    "topicList": {
+      "type": "json",
+      "label": "Topic List",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "numQuiz": {
+      "type": "int",
+      "label": "Question Count",
+      "default": 0,
+      "visible": [
+        "list",
+        "get"
+      ]
+    },
+    "description": {
+      "type": "text",
+      "label": "Description",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "get",
+        "create",
+        "update"
+      ]
+    },
+    "status": {
+      "type": "enum",
+      "label": "Status",
+      "options": {
+        "active": "Active",
+        "hidden": "Hidden",
+        "draft": "Draft"
+      },
+      "default": "active",
+      "editable": [
+        "create",
+        "update"
+      ],
+      "visible": [
+        "list",
+        "get",
+        "create",
+        "update"
+      ],
+      "ui": {
+        "columns": true,
+        "filterable": true
+      }
+    }
+  },
+  "scopes": {
+    "admin": {
+      "access": "network"
+    },
+    "publisher": {
+      "access": "publisher"
+    }
+  },
+  "listView": {
+    "columns": [
+      "name",
+      "topicId",
+      "numQuiz",
+      "status"
+    ],
+    "defaultSort": "name",
+    "pageSize": 50
+  },
+  "filters": [
+    "topicId",
+    "status"
+  ],
+  "webView": {
+    "landing": true,
+    "slugField": "name",
+    "detail": true
+  }
+}

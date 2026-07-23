@@ -1,13 +1,10 @@
 // packages/codegen/src/run.ts — one-off: emit artifacts to disk (proves codegen).
 import { writeFileSync } from 'node:fs';
 import { generateAll } from './index.js';
-import { registry, defineResource } from '@lakshya/core';
+import { registry, loadResourceFiles } from '@lakshya/core';
 
-// Ensure resources are registered (importing the api resources registers them).
-import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
-const apiResources = await import(pathToFileURL(join(process.cwd(), '../../apps/api/src/resources.ts')).href);
-void apiResources;
+// Load resource definitions from JSON files (single source of truth).
+loadResourceFiles();
 
 const out = generateAll();
 writeFileSync(new URL('./generated/openapi.json', import.meta.url), JSON.stringify(out.openapi, null, 2));
